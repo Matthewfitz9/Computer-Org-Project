@@ -25,12 +25,15 @@ Step One:
 This project uses Maven to manage dependencies, so you must have Maven installed.
 
 On Windows:  
+
     Open Powershell, type: winget install -e --id Apache.Maven
 
 On Linux:  
+
     Open a terminal, type: sudo apt install maven
 
 Verify installation:  
+
     Close and re-open terminal/Powershell, type: mvn -version
 
 
