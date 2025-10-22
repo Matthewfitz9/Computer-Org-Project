@@ -7,7 +7,7 @@
 # Team Members
 
 
-*Joshua Corcoran
+Joshua Corcoran\n
 *Mathieu Gril
 *Matthew Fitzgerald
 *Artem Bosyi
