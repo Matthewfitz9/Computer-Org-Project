@@ -24,25 +24,25 @@ Step One:
 
 This project uses Maven to manage dependencies, so you must have Maven installed.
 
-On Windows:
+On Windows:  
     Open Powershell, type: winget install -e --id Apache.Maven
 
-On Linux:
+On Linux:  
     Open a terminal, type: sudo apt install maven
 
-Verify installation:
+Verify installation:  
     Close and re-open terminal/Powershell, type: mvn -version
 
 
 Step Two:
 
-Clone/Pull from the github repo.
+Clone/Pull from the github repo.  
 
-Open the entire project folder in your IDE, not just one file.
+Open the entire project folder in your IDE, not just one file.  
 
-If all has gone correctly, your IDE will see the 'pom.xml' file and automatically start downloading OSHI using Maven. Wait for it to finish.
+If all has gone correctly, your IDE will see the 'pom.xml' file and automatically start downloading OSHI using Maven. Wait for it to finish.  
 
-Open src/main/java/com/JAMM/Main.java, and run it. It should display your system's basic hardware.
+Open src/main/java/com/JAMM/Main.java, and run it. It should display your system's basic hardware.  
 
 
 # Team roles & tasks
@@ -50,26 +50,26 @@ Open src/main/java/com/JAMM/Main.java, and run it. It should display your system
 
 Each person should create their own '.java' file for their module/modules. We will combine them into the Main.java file at the end.
 
-Josh:
+Josh:  
     Project co-ordination, file integration, and Github management.
 
     Modules:
         Memory
         Pci
 
-Artem:
+Artem:  
     Tool visualisation.
 
     Module:
         SystemInfo
 
-Matthieu:
+Matthieu:  
     Documentation and code readability.
 
     Module:
         CPU
 
-Matthew:
+Matthew:  
     Creativity/Innovation.
 
     Modules:
