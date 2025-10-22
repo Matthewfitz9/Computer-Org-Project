@@ -52,26 +52,22 @@ Each person should create their own '.java' file for their module/modules. We wi
 
 Josh:  
     Project co-ordination, file integration, and Github management.
-
-    Modules:
+    Modules:  
         Memory
         Pci
 
 Artem:  
     Tool visualisation.
-
-    Module:
+    Module:  
         SystemInfo
 
 Matthieu:  
     Documentation and code readability.
-
-    Module:
+    Module:  
         CPU
 
 Matthew:  
     Creativity/Innovation.
-
-    Modules:
+    Modules:  
         Disk
         Usb
