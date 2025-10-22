@@ -51,23 +51,21 @@ Open src/main/java/com/JAMM/Main.java, and run it. It should display your system
 Each person should create their own '.java' file for their module/modules. We will combine them into the Main.java file at the end.
 
 Josh:  
+
     Project co-ordination, file integration, and Github management.  
-    Modules:  
-        Memory  
-        Pci
+    Modules: Memory, Pci
 
 Artem:  
+
     Tool visualisation.  
-    Module:  
-        SystemInfo
+    Module: SystemInfo
 
 Matthieu:  
+
     Documentation and code readability.  
-    Module:  
-        CPU
+    Module: CPU
 
 Matthew:  
+
     Creativity/Innovation.
-    Modules:  
-        Disk  
-        Usb
+    Modules: Disk, Usb
