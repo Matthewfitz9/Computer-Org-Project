@@ -45,8 +45,14 @@ public class CPU {
        
         else if ((input1.contains("cache")) || (input1.contains("caches"))) {
            
-            List<ProcessorCache> cache = processor.getProcessorCaches();
-          //  for (ProcessorCache cache : caches) {
+            List<ProcessorCache> caches = processor.getProcessorCaches();
+            for (ProcessorCache cache : caches) {
+
+                System.out.println(cache);
+                continue;
+            }
+            for (ProcessorCache cache : caches) {
+
                /*  System.out.println("Cache Level: " + cache.getLevel());
                  System.out.println("Cache Type: " + cache.getType());
                   System.out.println("Cache Size: " + cache.getCacheSize() + " bytes");  */
@@ -64,6 +70,7 @@ public class CPU {
                       switch (option) {
                           
                         case 1:
+
                         
                              System.out.println("Cache Level: " + cache.getLevel());
                               System.out.println("Cache Type: " + cache.getType());
@@ -92,19 +99,11 @@ public class CPU {
                           default:
                               System.out.println("Invalid option. Please choose 1, 2, or 3.");
                                break;     
-                      }
-                  }
+                      } // switch
+                  } // while
 
-               /*  if (cacheInput.equals("l" + lvl)) {
-                      System.out.println("Cache Level: " + cache.getLevel());
-                      System.out.println("Cache Type: " + cache.getType());
-                      System.out.println("Cache Size: " + cache.getCacheSize() + " bytes");  
-                  }
-*/
-
-
-            }
-        }
+            } // for
+        } // else if
 
         else if ((input1.contains("all")) || (input1.contains("cpu"))) {
 
@@ -128,16 +127,15 @@ public class CPU {
         }
 
 
-   /*  List<ProcessorCache> caches = processor.getProcessorCaches();
+  /*  List<ProcessorCache> caches = processor.getProcessorCaches();
         for (ProcessorCache cache : caches) {
             System.out.println("Cache Level: " + cache.getLevel());cache
             System.out.println("Cache Type: " + cache.getType());
             System.out.println("Cache Size: " + cache.getSize() + " bytes");
             System.out.println();
         }
+
 */
-
-
 /* cores
 
         System.out.println("=== CPU Information ===");
