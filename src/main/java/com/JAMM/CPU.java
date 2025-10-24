@@ -2,10 +2,10 @@ package com.JAMM;
 
 import java.util.List;
 import java.util.Scanner;
+
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.ProcessorCache;
-import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 
 public class CPU {

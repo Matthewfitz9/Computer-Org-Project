@@ -11,7 +11,7 @@ public class Main {
         HardwareAbstractionLayer hal = si.getHardware();
 
         // 1. Get CPU Info
-          CPU.displayinfo();
+        Pci.displayPci(hal);
  
     }
 }

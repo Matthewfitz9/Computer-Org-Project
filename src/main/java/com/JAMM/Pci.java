@@ -25,7 +25,18 @@ public class Pci {
             System.out.println(graphicsCard.getVRam());
         }
 
-        for (NetworkIF networkDevice : networkDevices) {
+        for (NetworkIF netDevice : networkDevices) {
+            // ignore virtual hardware to only get actual physical crap
+            if (netDevice.isKnownVmMacAddr()) {
+                continue;
+            }
+            System.out.printf("%n%n%s%n", netDevice.getDisplayName());
+            System.out.println(netDevice.getMacaddr());
+            for (String addr : netDevice.getIPv4addr()) {
+                System.out.println(addr);
+            }
+            System.out.println(netDevice.getSpeed());
+            
         }
 
         for (HWDiskStore storageDevice : storageDevices) {
@@ -36,14 +47,11 @@ public class Pci {
         }
 
         for (SoundCard soundCard : soundCards) {
+            System.out.printf("%n%n%s%n", soundCard.getDriverVersion());
+            System.out.println(soundCard.getCodec());
+            System.out.println(soundCard.getName());
 
         }
 
-    }
-
-    public static void displayLiveDiskInfo(HardwareAbstractionLayer inHal) {
-
-    }
-         
     }
 }
