@@ -3,6 +3,7 @@ package com.JAMM;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
 import oshi.hardware.HardwareAbstractionLayer;
 
 /**
@@ -95,9 +96,11 @@ public class MainArtem {
         boolean inCpuMenu = true;
 
         while (inCpuMenu) {
+            
             System.out.println("\n========== CPU INFORMATION ==========");
             System.out.println("1. View CPU Information (Interactive)");
-            System.out.println("2. Back to Main Menu");
+            System.out.println("2. View  CPU Load Graph");
+            System.out.println("0. Back to Main Menu");
             System.out.println("=====================================");
             System.out.print("Enter your choice: ");
 
@@ -114,6 +117,10 @@ public class MainArtem {
                         CPU.displayinfo();
                         break;
                     case 2:
+                        // Call CPU Load Graph method
+                        CpuGraph();
+                        break;
+                    case 0:
                         inCpuMenu = false;
                         break;
                     default:
@@ -150,7 +157,7 @@ public class MainArtem {
             System.out.println("\n========== DISK INFORMATION ==========");
             System.out.println("1. View All Disk Information");
             System.out.println("2. Search Disk Information (Keyword-based)");
-            System.out.println("3. Back to Main Menu");
+            System.out.println("0. Back to Main Menu");
             System.out.println("======================================");
             System.out.print("Enter your choice: ");
 
@@ -180,7 +187,7 @@ public class MainArtem {
                         System.out.println("\nPress Enter to continue...");
                         scanner.nextLine();
                         break;
-                    case 3:
+                    case 0:
                         inDiskMenu = false;
                         break;
                     default:
@@ -362,5 +369,56 @@ public class MainArtem {
                 scanner.nextLine(); // Clear invalid input
             }
         }
+    }
+
+    /**
+     * CpuGraph display method
+     */
+    public static void CpuGraph() {
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+
+        CentralProcessor processor = hal.getProcessor();
+        final int graphWidth = 50, graphHeight = 10;
+        double[] cpuHistory = new double[graphWidth];
+        long[] prevTicks = processor.getSystemCpuLoadTicks();
+        
+        while (true) {
+            double load = processor.getSystemCpuLoadBetweenTicks(prevTicks) * 100;
+            prevTicks = processor.getSystemCpuLoadTicks();
+            System.arraycopy(cpuHistory, 1, cpuHistory, 0, graphWidth - 1);
+            cpuHistory[graphWidth - 1] = load;
+
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            System.out.println("=".repeat(50));
+            System.out.println("CPU: " + processor.getProcessorIdentifier().getName());
+            System.out.println("-".repeat(50));
+            
+            // CPU graph
+            for (int h = graphHeight-1; h >= 0; h--) {
+                double threshold = ((double)h / (graphHeight-1)) * 100.0;
+                for (int x = 0; x < graphWidth; x++)
+                    System.out.print(cpuHistory[x] >= threshold ? "█" : " ");
+                System.out.println();
+            }
+            System.out.println("_".repeat(graphWidth));
+            System.out.printf("CPU Usage:   %.1f%%\n\n", load);
+            System.out.println("=".repeat(50));
+            System.out.println("\nPress Enter to exit...");
+            
+            try {
+                if (System.in.available() > 0) {
+            break;  // Exiting the loop when a key is pressed
+        }
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }
