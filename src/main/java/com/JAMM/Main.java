@@ -13,8 +13,8 @@ public class Main {
 
         // === The code is executed in a new terminal window, drawing a graph ===
 
-        SystemInfo si = new SystemInfo();
-        HardwareAbstractionLayer hal = si.getHardware();
+       // SystemInfo si = new SystemInfo();
+        //HardwareAbstractionLayer hal = si.getHardware();
 
         CentralProcessor processor = hal.getProcessor();
         GlobalMemory memory = hal.getMemory();

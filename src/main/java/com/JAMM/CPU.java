@@ -1,18 +1,20 @@
 package com.JAMM; 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.ProcessorCache;
+<<<<<<< Updated upstream
+=======
+//ioimport oshi.hardware.GlobalMemory;
+>>>>>>> Stashed changes
 import oshi.hardware.HardwareAbstractionLayer;
 
 public class CPU {
 
     public static CentralProcessor getCpuCores() {
-           Scanner ise = new Scanner(System.in);
        
         // creates a syateminfo object and hardwareabstract object
         SystemInfo si = new SystemInfo();
@@ -25,48 +27,42 @@ public class CPU {
     public static void displayinfo() {
         
         // processor of type centralproceesor
-        CentralProcessor processor = getCpuCores();
+         CentralProcessor processor = getCpuCores();
         
-       Scanner ise = new Scanner(System.in);
+         Scanner ise = new Scanner(System.in);
         
-        System.out.print("What would you like to know about the CPU? ");
+            System.out.print(" What would you like to know about the CPU? ");
             String input1 = ise.nextLine().toLowerCase();
 
         if ((input1.contains("cores"))) {
-         //  System.out.println("Processor: " + processor.getProcessorIdentifier().getName());
-           
-         System.out.println("Physical Cores: " + processor.getPhysicalProcessorCount());
-             System.out.println("Logical Cores: " + processor.getLogicalProcessorCount());
+            
+            System.out.println("=== Core Information ===");
+            System.out.println(" Physical Cores: " + processor.getPhysicalProcessorCount());
+            System.out.println(" Logical Cores: " + processor.getLogicalProcessorCount());
         } 
         
         else if ((input1.contains("frequency")) || (input1.contains("freq"))) {
            
-            System.out.println("Max Frequency: " + processor.getMaxFreq() + " GHz");
+            System.out.println("=== CPU Frequency Information ===");
+            System.out.println(" Max Frequency: " + processor.getMaxFreq() + " GHz");
         } 
        
         else if ((input1.contains("cache")) || (input1.contains("caches"))) {
            
             List<ProcessorCache> caches = (List<ProcessorCache>) processor.getProcessorCaches();
-             
-          /*   
-            for (ProcessorCache cache : caches) {
-
-                System.out.println(caches);
-                continue;
-            }*/
             
             int size = caches.size();
              
              int c3 = 0;
-               int c2 = 0;
-               int c1 = 0;
+             int c2 = 0;
+             int c1 = 0;
            
+              
+             
                for (ProcessorCache cache : caches) {
 
-            String change = String.valueOf(cache.getLevel());
-               
-              
-               
+                String change = String.valueOf(cache.getLevel());
+                  
                if (change.contains("3")) {    
                    c3++;
                } else if (change.contains("2")) {   
@@ -74,126 +70,104 @@ public class CPU {
                } else if (change.contains("1")) {   
                    c1++;
                }
-            }
+            } // for
             
-
-
                 int option = 0;
                   while (option != 4) {
               
                     
-                    System.out.print("Which cache information would you like to know about? 1, 2, 3: ");
+                    System.out.print(" Which cache information would you like to know about? \n L1 \n L2  \n L3 \n 4 to exit: ");
                       option = ise.nextInt();
 
-                      switch (option) {
+                    
+                       switch (option) {
                           
-                        case 1:
-                     
-                        int limit1 = c1; // limit is number of level 1 caches
+                         case 1:
+                         int limit1 = c1; // limit is number of level 1 caches ie 3
                          c1 = size - c1; // this creates index
 
                          while (limit1 < size) {
-                             System.out.println("Cache Level: " + ((List<ProcessorCache>) caches).get(limit1).getLevel());
-                              System.out.println("Cache Type: " + ((List<ProcessorCache>) caches).get(limit1).getType());
-                               System.out.println("Cache Size: " + ((List<ProcessorCache>) caches).get(limit1).getCacheSize() + " bytes");
-                                 limit1++; // increase until all level 1 caches are printed
-                                  c1++;
-                           }
-        
-                                break;
+                             System.out.println(" Cache Level: " + ((List<ProcessorCache>) caches).get(limit1).getLevel());
+                             System.out.println(" Cache Type: " + ((List<ProcessorCache>) caches).get(limit1).getType());
+                             System.out.println(" Cache Size: " + ((List<ProcessorCache>) caches).get(limit1).getCacheSize() + " bytes");
+                               limit1++; // increase until all level 1 caches are printed
+                               c1++;
+                         }
+                              break;
                          
-                         case 2:
-                           
-                          int limit2 = c2;
-                           c2 = size - (c1 + c2);
-                            int start2 = 0;
+                         case 2:  
+                         int limit2 = c2; // limit is number of level 2 caches ie 2
+                         c2 = size - (c1 + c2);
+                         int start2 = 0;
 
-                           while (start2 < limit2) {
-                               System.out.println("Cache Level: " + ((List<ProcessorCache>) caches).get(c2).getLevel());
-                                System.out.println("Cache Type: " + ((List<ProcessorCache>) caches).get(c2).getType());
-                                 System.out.println("Cache Size: " + ((List<ProcessorCache>) caches).get(c2).getCacheSize() + " bytes"); 
-                                 start2++;
-                                  c2++;   
-                           } 
+                         while (start2 < limit2) {
+                             System.out.println(" Cache Level: " + ((List<ProcessorCache>) caches).get(c2).getLevel());
+                             System.out.println(" Cache Type: " + ((List<ProcessorCache>) caches).get(c2).getType());
+                             System.out.println(" Cache Size: " + ((List<ProcessorCache>) caches).get(c2).getCacheSize() + " bytes"); 
+                              start2++; //  increase until all level 2 caches are printed
+                              c2++;   
+                         } 
+                              break;
 
-                                break;
-
-                         case 3:
-                            
-                        int limit3 = c3;
-                         c3 = size - (c1 + c2 + c3);
+                         case 3:        
+                         int limit3 = c3; // limit is number of level 3 caches ie 1
+                         c3 = size - (c1 + c2 + c3); // should always equal 0 as first one will always be level 3 cache
 
                          while (c3 < limit3) {
-                              System.out.println("Cache Level: " + ((List<ProcessorCache>) caches).get(c3).getLevel());
-                                System.out.println("Cache Type: " + ((List<ProcessorCache>) caches).get(c3).getType());
-                                 System.out.println("Cache Size: " + ((List<ProcessorCache>) caches).get(c3).getCacheSize() + " bytes"); 
-                                  c3++;   
-                         }
-                             
+                             System.out.println(" Cache Level: " + ((List<ProcessorCache>) caches).get(c3).getLevel());
+                             System.out.println(" Cache Type: " + ((List<ProcessorCache>) caches).get(c3).getType());
+                             System.out.println(" Cache Size: " + ((List<ProcessorCache>) caches).get(c3).getCacheSize() + " bytes"); 
+                              c3++;  
+                         } 
 
-                                break;
+                              break;
 
                          case 4:
                               
-                            System.out.println("Exiting cache information menu.");
-                               break;
+                            System.out.println(" Exiting cache information menu.");
+                              break;
 
-                          default:
+                         default:
                               
-                          System.out.println("Invalid option. Please choose 1, 2, or 3.");
-                               break;
+                             System.out.println(" Invalid option. Please choose 1, 2, or 3.");
+                              break;
 
-                      } 
-                  } // while 
+                 } // switch
+             } // while 
+         } // else if
 
-           // }// for
-        } // else if
+      else if ((input1.contains("processor")) || (input1.contains("processors"))) {
 
-        else if ((input1.contains("all")) || (input1.contains("cpu"))) {
+            System.out.println("=== Processor Information ===");
+            System.out.println(" Processor: " + processor.getProcessorIdentifier().getName());
+            System.out.println(" Identifier: " + processor.getProcessorIdentifier().getIdentifier());
+            System.out.println(" Microarchitecture: " + processor.getProcessorIdentifier().getMicroarchitecture());
+    
+        }
+            
+
+      else if ((input1.contains("all")) || (input1.contains("cpu"))) {
 
             System.out.println("=== CPU Information ===");
-             System.out.println("Processor: " + processor.getProcessorIdentifier().getName());
-              System.out.println("Physical Cores: " + processor.getPhysicalProcessorCount());
-               System.out.println("Logical Cores: " + processor.getLogicalProcessorCount());
-                System.out.println("Max Frequency: " + processor.getMaxFreq() + " GHz");
+            System.out.println(" Processor: " + processor.getProcessorIdentifier().getName());
+            System.out.println(" Physical Cores: " + processor.getPhysicalProcessorCount());
+            System.out.println(" Logical Cores: " + processor.getLogicalProcessorCount());
+            System.out.println(" Max Frequency: " + processor.getMaxFreq() + " GHz");
 
         } 
-
-        else if ((input1.contains("processor")) || (input1.contains("name"))) {
-
-            System.out.println("Processor: " + processor.getProcessorIdentifier().getName());
-          //c   System.out.println("ID Number: " + processor.getPhysicalProcessorNumber());
-      
-        }
+       
         else {
-            System.out.println("Invalid input. Please enter 'cores', 'frequency', or 'all'.");
+            System.out.println("Invalid input. Please enter 'cores', 'frequency', 'processor', or 'all'.");
 
-        }
-
-
-  /*  List<ProcessorCache> caches = processor.getProcessorCaches();
-        for (ProcessorCache cache : caches) {
-            System.out.println("Cache Level: " + cache.getLevel());cache
-            System.out.println("Cache Type: " + cache.getType());
-            System.out.println("Cache Size: " + cache.getSize() + " bytes");
-            System.out.println();
-        }
-
-*/
-/* cores
-
-        System.out.println("=== CPU Information ===");
-        System.out.println("Processor: " + processor.getProcessorIdentifier().getName());
-        System.out.println("Physical Cores: " + processor.getPhysicalProcessorCount());
-        System.out.println("Logical Cores: " + processor.getLogicalProcessorCount());
-        System.out.println("Max Frequency: " + processor.getMaxFreq() + " GHz");
-       */
-    
-    }
-}
+         } 
+     } // displayinfo
+ } // cpu
         
+<<<<<<< Updated upstream
     
 <<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
 
 =======
 }
