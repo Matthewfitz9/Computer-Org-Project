@@ -3,10 +3,10 @@ package com.JAMM;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.ProcessorCache;
-import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 
 public class CPU {
@@ -193,4 +193,8 @@ public class CPU {
 }
         
     
+<<<<<<< HEAD
 
+=======
+}
+>>>>>>> c7ed0fa5fead98524b295eebd1ffaa54fba48dd4
