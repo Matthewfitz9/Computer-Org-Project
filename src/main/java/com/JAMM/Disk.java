@@ -62,7 +62,7 @@ public class Disk {
         // Infinite loop until the user decides to quit
         while (true) {
             System.out.println("\nEnter the information you wish to know about.");
-            System.out.println("Try phrases like: 'disk model', 'serial number', 'show all', etc.");
+            System.out.println("Options: Name, Model, Partition, bytes read by disk, Size, Serial number.");
             System.out.println("Type 'exit' to quit.");
             System.out.print("Enter choice: ");
             String option = sc.nextLine();
