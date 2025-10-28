@@ -1,18 +1,19 @@
 package com.JAMM;
 
-import oshi.SystemInfo;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.hardware.UsbDevice;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
+
+import oshi.SystemInfo;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.UsbDevice;
 
 
 public class USB {
     // Map to link Vendor IDs to readable Vendor Names
     private static final Map<String, String> vendorLookup = new HashMap<>();
+
+    private static List<UsbDevice> usbDevices;
 
     // Static block runs once when the class is loaded
     static {
@@ -23,129 +24,109 @@ public class USB {
         vendorLookup.put("0x046D", "Logitech");
     }
 
-        public void displayUSBInfo () {
-            Scanner sc = new Scanner(System.in);
-            // SystemInfo provides access to hardware data
-            SystemInfo si = new SystemInfo();
+    public static void usbMenu() {
+        // Create SystemInfo and HardwareAbstractionLayer objects to access hardware data
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
 
-            // Get the hardware abstraction layer
-            HardwareAbstractionLayer hal = si.getHardware();
+        // Get the list of all physical disks connected to the system
+        usbDevices = hal.getUsbDevices(false);
 
-            // Get a list of all connected USB devices
-            List<UsbDevice> usbDevices = hal.getUsbDevices(true);
-
+        while (true) {
             // Check if there are no connected USB devices
             if (usbDevices.isEmpty()) {
-               System.out.println("There are currently no USB devices. Therefore no information can be displayed");
+                System.out.println("!-- There are currently no USB devices. --!");
+                return;
             }
-            while (true) {
-                System.out.println("\n----Main Menu----");
-                System.out.println("1. USB name");
-                System.out.println("2. Vendor information");
-                System.out.println("3. Product information");
-                System.out.println("4. Device information");
-                System.out.println("5. Exit");
-                System.out.print("Enter: ");
-                int choice = sc.nextInt();
 
-                switch (choice) {
-                    case 1:
-                        for (int y = 0; y < usbDevices.size(); y++) {
-                            System.out.println("USB " + (y + 1) + " name is: " + usbDevices.get(y).getName());
-                        }
-                        break;
-                    // Submenu
-                    case 2:
-                        boolean i = true;
-                        while (i) {
-                            System.out.println("----Vendor Menu----");
-                            System.out.println("1. Vendor name");
-                            System.out.println("2. Vendor ID");
-                            System.out.println("3. Go back to main menu");
-                            System.out.print("Enter: ");
-                            int h = sc.nextInt();
+            System.out.println("=== Available USB Devices ===");
+            for (int i = 0; i < usbDevices.size(); i++) {
+                System.out.println((i + 1) + ". " + usbDevices.get(i).getName());
+            }
 
-                            switch (h) {
-                                case 1:
-                                    for (int w = 0; w < usbDevices.size(); w++) {
-                                        String vendorId = usbDevices.get(w).getVendorId();
-                                        String vendorName = vendorLookup.getOrDefault(vendorId, "Unknown");
-                                        System.out.println("Vendor " + (w + 1) + "'s" + " name is: " + usbDevices.get(w).getVendor() + " (" + vendorName + ")");
-                                    }
-                                    break;
-                                case 2:
-                                    for (int k = 0; k < usbDevices.size(); k++) {
-                                        // Retrieve the vendor ID for each connected USB device
-                                        String vendorId = usbDevices.get(k).getVendorId();
-                                        // Get vendor name from lookup map, default to "Unknown" if not found
-                                        String vendorName = vendorLookup.getOrDefault(vendorId, "Unknown");
-                                        System.out.println("Vendor ID " + (k + 1) + " is: " + vendorId + " (" + vendorName + ")");
-                                    }
-                                    break;
-                                case 3:
-                                    i = false;
-                                    break;
-                                default:
-                                    System.out.println("Error, please try again");
-                                    break;
-                            }
-                        }
-                        break;
-                    case 3:
-                        for (int z = 0; z < usbDevices.size(); z++) {
-                            System.out.println("Product ID " + (z + 1) + " is: " + usbDevices.get(z).getProductId());
-                        }
-                        break;
-                    // Submenu
-                    case 4:
-                        boolean f = true;
-                        while (f) {
-                            System.out.println("----Device information----");
-                            System.out.println("1. Serial number");
-                            System.out.println("2. Unique device ID");
-                            System.out.println("3. Go back to main menu");
-                            System.out.print("Enter: ");
-                            int pick = sc.nextInt();
+            System.out.println("0. Exit");
+            System.out.print("\nEnter the list number of the USB device you want to examine: ");
+            String choice = Main.scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
+            System.out.println("");
 
-                            switch (pick) {
-                                case 1:
-                                    for (int j = 0; j < usbDevices.size(); j++) {
-                                        String serial = usbDevices.get(j).getSerialNumber();
-                                        // Handle devices that don’t have serial numbers
-                                        if (serial == null || serial.isEmpty()) {
-                                            System.out.println("Serial number not available for device " + (j + 1));
-                                        } else {
-                                            System.out.println("Serial Number " + (j + 1) + " is: " + serial);
-                                        }
-                                    }
+            if (choice.contains("0") || 
+                    choice.contains("exit") || 
+                    choice.contains("quit")) {
+                System.out.println("Returning to main menu...\n");
+                return;
+            }
+
+            displayUSBInfo(choice);
+        }
+    }
+
+    private static void displayUSBInfo (String choice) {
+
+        int usbNum;
+        
+        try {
+            usbNum = Integer.valueOf(choice) - 1;
+        } catch (Exception e) {
+            System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.\n");
+            return;
+        }
+
+        UsbDevice usb = usbDevices.get(usbNum);
 
 
-                                    break;
-                                case 2:
-                                    for (int x = 0; x < usbDevices.size(); x++) {
-                                        System.out.println("Unique Device ID " + (x + 1) + " is: " + usbDevices.get(x).getUniqueDeviceId());
-                                    }
-                                    break;
-                                case 3:
-                                    f = false;
-                                    break;
-                                default:
-                                    System.out.println("Error, please try again");
-                                    break;
-                            }
-                        }
-                        break;
-                    case 5:
-                        System.out.println("Now exiting this programme, bye :)");
-                        return;
-                    default:
-                        System.out.println("Error, please try again");
-                        break;
-                }
+        while (true) {
+
+            System.out.println("\n=== " + usbDevices.get(usbNum).getName() + " ===\n");
+            System.out.println("1. General information");
+            System.out.println("2. Vendor information");
+            System.out.println("0. Exit");
+            System.out.print("\nEnter your choice: ");
+            String usbChoice = Main.scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
+            System.out.println("");
+
+            if (usbChoice.contains("1") || 
+                usbChoice.contains("general info") || 
+                usbChoice.contains("general")) {
+                showGeneralInfo(usb);
+            }
+
+            else if (usbChoice.contains("2") ||
+                usbChoice.contains("vendor") ||
+                usbChoice.contains("vendor info")) {
+                showVendorInfo(usb);
+                
+            } else if (usbChoice.contains("0") || 
+                    usbChoice.contains("exit") || 
+                    usbChoice.contains("quit")) {
+                System.out.println("Returning to USB select menu...\n");
+                return;
+
+            } else { // This replaces the 'default' case
+                System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.");
             }
         }
-    public static void main(String[] args) {
-            USB obj = new USB();
-            obj.displayUSBInfo();
+    }
+
+    private static void showGeneralInfo(UsbDevice usb) {
+        System.out.println("== USB Information ==\n");
+
+        String serial = usb.getSerialNumber();
+        // Handle devices that don’t have serial numbers
+        if (serial == null || serial.isEmpty()) {
+            System.out.println("Serial number not available for device.");
+        } else {
+            System.out.println(" Serial Number: " + serial);
+        }
+
+        System.out.println(" Product ID: " + usb.getProductId());
+        System.out.println(" Unique Device ID: " + usb.getUniqueDeviceId());
+        System.out.println(" Class: " + usb.getClass());
+    }
+
+    private static void showVendorInfo(UsbDevice usb) {
+        System.out.println("== Vendor Information ==\n");
+        String vendorId = usb.getVendorId();
+        String vendorName = vendorLookup.getOrDefault(vendorId, "Unknown");
+        System.out.println("Vendor: " + usb.getVendor() + " (" + vendorName + ")");
     }
 }
