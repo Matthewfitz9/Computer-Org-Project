@@ -1,6 +1,6 @@
 package com.JAMM; 
 
-import java.util.Arrays;
+
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -20,10 +20,11 @@ public class CPU {
        
         // creates a syateminfo object and hardwareabstract object
         SystemInfo si = new SystemInfo();
-         HardwareAbstractionLayer hal = si.getHardware();
-          
-        // returns the processor object 
-         return hal.getProcessor();
+        HardwareAbstractionLayer hal = si.getHardware();
+        CentralProcessor processor = hal.getProcessor();
+
+        // returns the processor object
+         return processor;
     }
 
     public static void cpuMenu() {
@@ -32,12 +33,12 @@ public class CPU {
         
         while (inCpuMenu) {
             
-            System.out.println("\n========== CPU INFORMATION ==========");
-            System.out.println("1. View CPU Information (Interactive)");
-            System.out.println("2. View  CPU Load Graph");
-            System.out.println("0. Back to Main Menu");
-            System.out.println("=====================================");
-            System.out.print("Enter your choice: ");
+            System.out.println("\n ==== CPU INFORMATION ====");
+            System.out.println(" 1. View CPU Information (Interactive)");
+            System.out.println(" 2. View  CPU Load Graph");
+            System.out.println(" 0. Back to Main Menu");
+            System.out.println(" =========================");
+            System.out.print(" Enter your choice: ");
 
             try {
                 int choice = ise.nextInt();
@@ -47,7 +48,7 @@ public class CPU {
                     case 1:
                         // Call the existing CPU.displayinfo() method
                         System.out.println("\n--- Launching CPU Information Module ---\n");
-                        System.out.println("\n--- all / cores / frequency / cache ---\n");
+                        System.out.println("\n--- all / cores / frequency / cache / processor ---\n");
                         //Call the CPU info method
                         CPU.displayinfo();
                         break;
@@ -80,7 +81,7 @@ public class CPU {
 
         if ((input1.contains("cores"))) {
             
-            System.out.println("=== Core Information ===");
+            System.out.println(" === Core Information ===");
             System.out.println(" Physical Cores: " + processor.getPhysicalProcessorCount());
             System.out.println(" Logical Cores: " + processor.getLogicalProcessorCount());
         } 
@@ -98,13 +99,14 @@ public class CPU {
             avrgFreq = (total / (double) freqs.length) / 1_000_000_000.0;
        
 
-            System.out.println("=== Frequency Information ===");
+            System.out.println(" === Frequency Information ===");
             System.out.println(" Max Frequency: " + (processor.getMaxFreq() / 1000000000.0)+ " GHz");
             System.out.printf(" Current Frequency: %.3f GHz%n", avrgFreq);
         } 
        
         else if ((input1.contains("cache")) || (input1.contains("caches"))) {
            
+            System.out.println(" === Cache Information ===");
             List<ProcessorCache> caches = (List<ProcessorCache>) processor.getProcessorCaches();
             
             int size = caches.size();
@@ -116,8 +118,7 @@ public class CPU {
               
              
                for (ProcessorCache cache : caches) {
-                System.out.println(cache);
-
+   
                 String change = String.valueOf(cache.getLevel());
                   
                if (change.contains("3")) {    
@@ -185,17 +186,20 @@ public class CPU {
 
       else if ((input1.contains("processor")) || (input1.contains("processors"))) {
 
-            System.out.println("=== Processor Information ===");
+            System.out.println(" === Processor Information ===");
             System.out.println(" Processor: " + processor.getProcessorIdentifier().getName());
             System.out.println(" Identifier: " + processor.getProcessorIdentifier().getIdentifier());
             System.out.println(" Microarchitecture: " + processor.getProcessorIdentifier().getMicroarchitecture());
     
         }
+
+            
+        
             
 
       else if ((input1.contains("all")) || (input1.contains("cpu"))) {
 
-            System.out.println("=== CPU Information ===");
+            System.out.println(" === CPU Information ===");
             System.out.println(" Processor: " + processor.getProcessorIdentifier().getName());
             System.out.println(" Identifier: " + processor.getProcessorIdentifier().getIdentifier());
             System.out.println(" Microarchitecture: " + processor.getProcessorIdentifier().getMicroarchitecture());
@@ -205,13 +209,11 @@ public class CPU {
             System.out.println(" Max Frequency: " + (processor.getMaxFreq() / 1000000000.0) + " GHz");
             System.out.println(" Caches: " + processor.getProcessorCaches());
 
-            long[] prevTicks = processor.getSystemCpuLoadTicks();
-            System.out.println(" Usage: " + String.format("%.1f%%", processor.getSystemCpuLoadBetweenTicks(prevTicks) * 100));
-
-        } 
+        }
+        
        
         else {
-            System.out.println("Invalid input. Please enter 'cores', 'frequency', 'processor', 'all' or 'exit'.");
+            System.out.println(" Invalid input. Please enter 'cores', 'freq', 'processor', 'cache', 'all' or 'exit'.");
 
          }
            
