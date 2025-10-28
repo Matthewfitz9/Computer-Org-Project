@@ -2,6 +2,7 @@ package com.JAMM;
 
 import java.util.List;
 import java.util.Scanner;
+
 import oshi.SystemInfo;
 import oshi.hardware.GraphicsCard;
 import oshi.hardware.HWDiskStore;
@@ -154,13 +155,9 @@ public class Pci {
         }
 
     }
-<<<<<<< HEAD
 
     public static void displayLiveDiskInfo(HardwareAbstractionLayer inHal) {
 
     }
          
     }
-=======
-}
->>>>>>> c7ed0fa5fead98524b295eebd1ffaa54fba48dd4
