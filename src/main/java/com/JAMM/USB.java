@@ -3,11 +3,25 @@ package com.JAMM;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.UsbDevice;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 
 public class USB {
+    // Map to link Vendor IDs to readable Vendor Names
+    private static final Map<String, String> vendorLookup = new HashMap<>();
+
+    // Static block runs once when the class is loaded
+    static {
+        vendorLookup.put("0x8086", "Intel");
+        vendorLookup.put("0x1022", "AMD");
+        vendorLookup.put("0x0781", "SanDisk");
+        vendorLookup.put("0x05AC", "Apple");
+        vendorLookup.put("0x046D", "Logitech");
+    }
 
         public void displayUSBInfo () {
             Scanner sc = new Scanner(System.in);
@@ -20,6 +34,10 @@ public class USB {
             // Get a list of all connected USB devices
             List<UsbDevice> usbDevices = hal.getUsbDevices(true);
 
+            // Check if there are no connected USB devices
+            if (usbDevices.isEmpty()) {
+               System.out.println("There are currently no USB devices. Therefore no information can be displayed");
+            }
             while (true) {
                 System.out.println("\n----Main Menu----");
                 System.out.println("1. USB name");
@@ -32,8 +50,9 @@ public class USB {
 
                 switch (choice) {
                     case 1:
-                        System.out.println("USB 1 name is: " + usbDevices.get(0).getName());
-                        System.out.println("USB 2 name is: " + usbDevices.get(1).getName());
+                        for (int y = 0; y < usbDevices.size(); y++) {
+                            System.out.println("USB " + (y + 1) + " name is: " + usbDevices.get(y).getName());
+                        }
                         break;
                     // Submenu
                     case 2:
@@ -48,12 +67,20 @@ public class USB {
 
                             switch (h) {
                                 case 1:
-                                    System.out.println("Vendor 1 is: " + usbDevices.get(0).getVendor());
-                                    System.out.println("Vendor 2 is: " + usbDevices.get(1).getVendor());
+                                    for (int w = 0; w < usbDevices.size(); w++) {
+                                        String vendorId = usbDevices.get(w).getVendorId();
+                                        String vendorName = vendorLookup.getOrDefault(vendorId, "Unknown");
+                                        System.out.println("Vendor " + (w + 1) + "'s" + " name is: " + usbDevices.get(w).getVendor() + " (" + vendorName + ")");
+                                    }
                                     break;
                                 case 2:
-                                    System.out.println("Vendor ID 1 is: " + usbDevices.get(0).getVendorId());
-                                    System.out.println("Vendor ID 2 is: " + usbDevices.get(1).getVendorId());
+                                    for (int k = 0; k < usbDevices.size(); k++) {
+                                        // Retrieve the vendor ID for each connected USB device
+                                        String vendorId = usbDevices.get(k).getVendorId();
+                                        // Get vendor name from lookup map, default to "Unknown" if not found
+                                        String vendorName = vendorLookup.getOrDefault(vendorId, "Unknown");
+                                        System.out.println("Vendor ID " + (k + 1) + " is: " + vendorId + " (" + vendorName + ")");
+                                    }
                                     break;
                                 case 3:
                                     i = false;
@@ -65,8 +92,9 @@ public class USB {
                         }
                         break;
                     case 3:
-                        System.out.println("Product ID 1 is: " + usbDevices.get(0).getProductId());
-                        System.out.println("Product ID 2 is: " + usbDevices.get(1).getProductId());
+                        for (int z = 0; z < usbDevices.size(); z++) {
+                            System.out.println("Product ID " + (z + 1) + " is: " + usbDevices.get(z).getProductId());
+                        }
                         break;
                     // Submenu
                     case 4:
@@ -83,6 +111,7 @@ public class USB {
                                 case 1:
                                     for (int j = 0; j < usbDevices.size(); j++) {
                                         String serial = usbDevices.get(j).getSerialNumber();
+                                        // Handle devices that don’t have serial numbers
                                         if (serial == null || serial.isEmpty()) {
                                             System.out.println("Serial number not available for device " + (j + 1));
                                         } else {
@@ -93,8 +122,9 @@ public class USB {
 
                                     break;
                                 case 2:
-                                    System.out.println("Unique Device ID 1 is: " + usbDevices.get(0).getUniqueDeviceId());
-                                    System.out.println("Unique Device ID 2 is: " + usbDevices.get(1).getUniqueDeviceId());
+                                    for (int x = 0; x < usbDevices.size(); x++) {
+                                        System.out.println("Unique Device ID " + (x + 1) + " is: " + usbDevices.get(x).getUniqueDeviceId());
+                                    }
                                     break;
                                 case 3:
                                     f = false;
@@ -107,8 +137,7 @@ public class USB {
                         break;
                     case 5:
                         System.out.println("Now exiting this programme, bye :)");
-                        sc.close();
-                        break;
+                        return;
                     default:
                         System.out.println("Error, please try again");
                         break;
