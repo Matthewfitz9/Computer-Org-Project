@@ -21,14 +21,16 @@ public class CPU {
     }
 
     public static void displayinfo() {
-        
+
+        String input1;
+
         // processor of type centralproceesor
          CentralProcessor processor = getCpuCores();
         
          Scanner ise = new Scanner(System.in);
         
             System.out.print(" What would you like to know about the CPU? ");
-            String input1 = ise.nextLine().toLowerCase();
+             input1 = ise.nextLine().toLowerCase();
 
         if ((input1.contains("cores"))) {
             
@@ -153,9 +155,10 @@ public class CPU {
         } 
        
         else {
-            System.out.println("Invalid input. Please enter 'cores', 'frequency', 'processor', or 'all'.");
+            System.out.println("Invalid input. Please enter 'cores', 'frequency', 'processor', 'all' or 'exit'.");
 
-         } 
+         }
+           
      } // displayinfo
  } // cpu
         
