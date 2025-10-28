@@ -38,6 +38,7 @@ public class MainArtem {
         System.out.println("========================================");
         System.out.println("   SYSTEM INFORMATION VIEWER v1.0");
         System.out.println("========================================\n");
+        System.out.println("           Instructions   ");
 
         // Start main menu loop
         mainMenu();
@@ -74,7 +75,7 @@ public class MainArtem {
                  * These classes are expected to implement the corresponding methods
                  *  (e.g., CPU.displayinfo(), Disk.displayDiscInfo(), etc.).
                  */
-                switch (choice) {
+
                     /*
                      * After calling, for example, cpuMenu(),
                      * control is completely transferred to this method.
@@ -82,34 +83,35 @@ public class MainArtem {
                      * the user selects the next step, and again,
                      * the required logic (e.g., a graph, detailed information) is called via a switch statement.
                      */
-                    case "1":
-                    case "cpu":
-                    case "cpu information":
-                        CPU.cpuMenu(); // Enter CPU submenu
-                        break;
-                    case "2":
-                    case "memory":
-                    case "memory information":
+                    if (choice.contains("1") ||
+                        choice.contains("cpu information") ||
+                        choice.contains("cpu")) {
+                        CPU.cpuMenu();
+                    }
+                    else if (choice.contains("2") ||
+                        choice.contains("memory") ||
+                        choice.contains("memory information")) {
                         memoryMenu();
-                        break;
-                    case "3":
-                    case "disk":
-                    case "disk information":
+                    }
+                    if (choice.contains("3") ||
+                        choice.contains("disk information") ||
+                        choice.contains("disk")) {
                         diskMenu();
-                        break;
-                    case "4":
-                    case "usb":
-                    case "usb devices":
+                    }
+
+                    else if (choice.contains("4") ||
+                        choice.contains("usb information") ||
+                        choice.contains("usb")) {
                         usbMenu();
-                        break;
-                    case "5":
-                    case "pci":
-                    case "pci devices":
+                    }
+                    else if (choice.contains("5") ||
+                        choice.contains("pci information") ||
+                        choice.contains("pci")) {
                         pciMenu();
-                        break;
-                    case "6":
-                    case "about":
-                    case "about jamm project":
+                    }
+                    else if (choice.contains("6") ||
+                        choice.contains("about") ||
+                        choice.contains("about jamm project")) {
                         System.out.println("\n====== About JAMM Project =======");
                         System.out.println("Java Advanced Monitoring & Management");
                         System.out.println("using OSHI library to display CPU, memory,");
@@ -121,7 +123,13 @@ public class MainArtem {
                         System.out.println("3. Matthew Fitzgerald");
                         System.out.println("4. Mathieu Gril");
                         System.out.println("---------------------");
-                        break;
+                    }
+                    else if (choice.contains("0") ||
+                            choice.contains("exit") ||
+                            choice.contains("")) {
+                        pciMenu();
+                    }
+
                     case "0":
                     case "exit":
                     case "quit":
@@ -132,7 +140,7 @@ public class MainArtem {
                         return; // Exit the program
                     default:
                         System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.");
-                } //switch ends
+
                 /*
                  * Handle errors using try/catch InputMismatchException.
                  * If the user enters something other than a number, the program doesn't crash,
@@ -253,6 +261,7 @@ public class MainArtem {
                         //
                          Disk disk0Obj = new Disk(); // Create Disk instance
                         disk0Obj.displayDiscInfo(keyword);
+
                         break;
                     case "0":
                     case "exit":
