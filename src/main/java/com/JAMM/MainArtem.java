@@ -12,6 +12,9 @@ import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.HardwareAbstractionLayer;
 
+import oshi.software.os.OSFileStore;
+import java.util.List;
+
 /**
  * Main menu system for hardware information viewer
  * Uses existing library classes: CPU, Memory, Disk, Disk2, USB, Pci
@@ -60,6 +63,7 @@ public class MainArtem {
             System.out.println("3. Disk Information");
             System.out.println("4. USB Devices");
             System.out.println("5. PCI Devices");
+            System.out.println("6. About JAMM project");
             System.out.println("0. Exit");
             System.out.println("========================================");
             System.out.print("Enter your choice: ");
@@ -95,6 +99,21 @@ public class MainArtem {
                         break;
                     case 5:
                         pciMenu();
+                        break;
+                    case 6:
+                        System.out.println("\n========== ABOUT JAMM PROJECT ==========");
+                        System.out.println("JAMM (Java Advanced Monitoring & Management) — this is an educational project,");
+                        System.out.println("designed to analyze and display hardware characteristics");
+                        System.out.println("software using the OSHI library. The program allows");
+                        System.out.println("view information about CPU, memory, disks, USB and PCI devices.");
+                        System.out.println("\nProject developers:");
+                        System.out.println("1. Joshua Corcoran");
+                        System.out.println("2. Artem Bosyi");
+                        System.out.println("3. Matthew Fitzgerald");
+                        System.out.println("4. Mathieu Gril");
+                        System.out.println("========================================");
+                        System.out.println("\nPress Enter to return to the main menu...");
+                        scanner.nextLine();
                         break;
                     case 0:
                     // Exit condition
@@ -177,18 +196,62 @@ public class MainArtem {
         
         // Calls static method in Memory class for RAM info (hal passed in)
         Memory.displayMemory(hal);
+        displayMemory(hal); // Display memory with progress bars
         
         System.out.println("\n========================================");
         System.out.println("\nPress Enter to return to main menu...");
         scanner.nextLine();
     }
+        public static void displayMemory(HardwareAbstractionLayer hal) {
+        // Getting memory information
+        oshi.hardware.GlobalMemory mem = hal.getMemory();
+
+        long totalMem = mem.getTotal();
+        long usedMem = totalMem - mem.getAvailable();
+        long freeMem = mem.getAvailable();
+
+        long totalSwap = mem.getVirtualMemory().getSwapTotal();
+        long usedSwap = mem.getVirtualMemory().getSwapUsed();
+        long freeSwap = totalSwap - usedSwap;
+
+        // Visualization: Progress bars for RAM and swap
+        int barWidth = 40;
+        System.out.println("========== MEMORY USAGE ==========");
+
+        System.out.printf("RAM Total:      %,d MB\n", totalMem / 1024 / 1024);
+        System.out.printf("RAM Used:       %,d MB\n", usedMem / 1024 / 1024);
+        System.out.printf("RAM Free:       %,d MB\n", freeMem / 1024 / 1024);
+
+        // RAM bar
+        System.out.print("RAM:     [");
+        int ramBars = (int)(usedMem * barWidth / totalMem);
+        for (int i = 0; i < barWidth; i++)
+            System.out.print(i < ramBars ? "█" : " ");
+        System.out.printf("] %.1f%%\n", (100.0 * usedMem / totalMem));
+
+        System.out.printf("\nSwap Total:     %,d MB\n", totalSwap / 1024 / 1024);
+        System.out.printf("Swap Used:      %,d MB\n", usedSwap / 1024 / 1024);
+        System.out.printf("Swap Free:      %,d MB\n", freeSwap / 1024 / 1024);
+
+        // Swap bar
+        System.out.print("Swap:    [");
+        int swapBars = totalSwap == 0 ? 0 : (int)(usedSwap * barWidth / totalSwap);
+        for (int i = 0; i < barWidth; i++)
+            System.out.print(i < swapBars ? "█" : " ");
+        System.out.printf("] %.1f%%\n", totalSwap == 0 ? 0.0 : (100.0 * usedSwap / totalSwap));
+
+        System.out.println("==================================");
+    }
+
 
     /**
      * Disk information menu
      */
     private static void diskMenu() {
-        boolean inDiskMenu = true;
 
+        displayDiscUsage(); // Display disk usage with progress bars
+
+        boolean inDiskMenu = true;
         while (inDiskMenu) {
             System.out.println("\n========== DISK INFORMATION ==========");
             System.out.println("1. View All Disk Information");
@@ -235,6 +298,37 @@ public class MainArtem {
                     scanner.nextLine(); // Clear invalid input
                 }
         }
+    }
+
+
+
+    public static void displayDiscUsage() {
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        List<OSFileStore> fileStores = si.getOperatingSystem().getFileSystem().getFileStores();
+
+        int barWidth = 40;
+        System.out.println("======== DISK PARTITION USAGE ========");
+
+        for (OSFileStore store : fileStores) {
+            long totalSpace = store.getTotalSpace();
+            long usableSpace = store.getUsableSpace();
+            long usedSpace = totalSpace - usableSpace;
+            double usagePercent = totalSpace == 0 ? 0.0 : (100.0 * usedSpace / totalSpace);
+
+            System.out.println("\nPartition: " + store.getName() + " (" + store.getMount() + ")");
+            System.out.printf("  Total: %,d GB\n", totalSpace / 1024 / 1024 / 1024);
+            System.out.printf("  Used:  %,d GB\n", usedSpace / 1024 / 1024 / 1024);
+            System.out.printf("  Free:  %,d GB\n", usableSpace / 1024 / 1024 / 1024);
+
+            // Progress bar
+            System.out.print("  Usage: [");
+            int bars = totalSpace == 0 ? 0 : (int)(usedSpace * barWidth / totalSpace);
+            for (int i = 0; i < barWidth; i++)
+                System.out.print(i < bars ? "█" : " ");
+            System.out.printf("] %.1f%%\n", usagePercent);
+        }
+        System.out.println("\n======================================");
     }
 
     /**
