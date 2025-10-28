@@ -6,14 +6,12 @@ package com.JAMM; //Main package for the application
  *  receives data that does not match the expected type.
  */
 import java.util.InputMismatchException;
-import java.util.Scanner;
-// Uses OSHI library to retrieve system information.
-import oshi.SystemInfo;
-import oshi.hardware.CentralProcessor;
-import oshi.hardware.HardwareAbstractionLayer;
-
-import oshi.software.os.OSFileStore;
 import java.util.List;
+import java.util.Scanner;
+
+import oshi.SystemInfo;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.software.os.OSFileStore;
 
 /**
  * Main menu system for hardware information viewer
@@ -86,7 +84,7 @@ public class MainArtem {
                      * the required logic (e.g., a graph, detailed information) is called via a switch statement.
                      */
                     case 1:
-                        cpuMenu(); // Enter CPU submenu
+                        CPU.cpuMenu(); // Enter CPU submenu
                         break;
                     case 2:
                         memoryMenu();
@@ -147,46 +145,6 @@ public class MainArtem {
     /**
      * CPU submenu - displays processor information options
      */
-    private static void cpuMenu() {
-        boolean inCpuMenu = true; // Flag to control CPU menu loop
-
-        while (inCpuMenu) {
-            
-            System.out.println("\n========== CPU INFORMATION ==========");
-            System.out.println("1. View CPU Information (Interactive)");
-            System.out.println("2. View  CPU Load Graph");
-            System.out.println("0. Back to Main Menu");
-            System.out.println("=====================================");
-            System.out.print("Enter your choice: ");
-
-            try {
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-
-                switch (choice) {
-                    case 1:
-                        // Call the existing CPU.displayinfo() method
-                        System.out.println("\n--- Launching CPU Information Module ---\n");
-                        System.out.println("\n--- all / cores / frequency / cache ---\n");
-                        //Call the CPU info method
-                        CPU.displayinfo();
-                        break;
-                    case 2:
-                        // Call CPU Load Graph method
-                        CpuGraph();
-                        break;
-                    case 0:
-                        inCpuMenu = false;
-                        break;
-                    default:
-                        System.out.println("\n[ERROR] Invalid choice. Please enter 1 or 2.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("\n[ERROR] Invalid input. Please enter a number.");
-                scanner.nextLine(); // Clear invalid input
-            }
-        }
-    }
 
     /**
      * Memory information menu
@@ -513,68 +471,5 @@ public class MainArtem {
     /**
      * CpuGraph display method
      */
-    public static void CpuGraph() {
-        // Local instances to avoid interfering with the global ones
-        SystemInfo si = new SystemInfo();
-        HardwareAbstractionLayer hal = si.getHardware();
-
-        CentralProcessor processor = hal.getProcessor();
-        final int graphWidth = 50, graphHeight = 10;
-        // Compute current CPU load percentage
-        double[] cpuHistory = new double[graphWidth];
-        long[] prevTicks = processor.getSystemCpuLoadTicks();
-        
-        while (true) {
-            double load = processor.getSystemCpuLoadBetweenTicks(prevTicks) * 100;
-            prevTicks = processor.getSystemCpuLoadTicks();
-            // Shift history left and add new load value
-            System.arraycopy(cpuHistory, 1, cpuHistory, 0, graphWidth - 1);
-            cpuHistory[graphWidth - 1] = load;
-
-            // Clear console (ANSI escape codes)
-            /*To clear the screen to a new frame, the ANSI code "\033[H\033[2J" is used, 
-            * which does not work in all Windows terminals, 
-            * but works fine in VS Code or WSL and in classic UNIX terminals.
-            */
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
-            System.out.println("=".repeat(50));
-            System.out.println("CPU: " + processor.getProcessorIdentifier().getName());
-            System.out.println("-".repeat(50));
-            
-            // Draw dynamic CPU graph from bottom (high %) to top (low %)
-            // Each row represents a level of CPU usage threshold
-            for (int h = graphHeight-1; h >= 0; h--) {
-                double threshold = ((double)h / (graphHeight-1)) * 100.0;
-                // Print each column based on whether usage exceeds threshold
-                /*The graph is built from the bottom up: in each line of the graph, 
-                * the symbol '█' is displayed if the corresponding history value
-                * exceeds % for that line (the higher the row, the higher the “threshold”). 
-                */
-                for (int x = 0; x < graphWidth; x++)
-                    System.out.print(cpuHistory[x] >= threshold ? "█" : " ");
-                System.out.println();
-            }
-            System.out.println("_".repeat(graphWidth));
-            System.out.printf("CPU Usage:   %.1f%%\n\n", load);
-            System.out.println("=".repeat(50));
-            System.out.println("\nPress Enter to exit...");
-            // Wait 500 ms, exit the loop if key pressed
-            try {
-                // System.in.available() allows checking if user pressed ENTER
-                if (System.in.available() > 0) {
-            break;  // Exiting the loop when a key is pressed
-        }
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //An InterruptedException error causes 
-                //a forced exit (a graceful termination of the thread when stopped).
-                Thread.currentThread().interrupt();
-            break;
-            } catch (Exception e) {
-                // Catch any other exceptions (like IO exceptions)
-                e.printStackTrace();
-            }
-        } //while ends
-    } //CpuGraph ends
+    
 } //Main ends

@@ -1,5 +1,6 @@
 package com.JAMM; 
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -9,6 +10,9 @@ import oshi.hardware.CentralProcessor.ProcessorCache;
 import oshi.hardware.HardwareAbstractionLayer;
 
 public class CPU {
+
+    private static Scanner ise;
+
 
     public static CentralProcessor getCpuCores() {
        
@@ -20,14 +24,54 @@ public class CPU {
          return hal.getProcessor();
     }
 
+    public static void cpuMenu() {
+        boolean inCpuMenu = true; // Flag to control CPU menu loop
+        ise = new Scanner(System.in);
+        
+        while (inCpuMenu) {
+            
+            System.out.println("\n========== CPU INFORMATION ==========");
+            System.out.println("1. View CPU Information (Interactive)");
+            System.out.println("2. View  CPU Load Graph");
+            System.out.println("0. Back to Main Menu");
+            System.out.println("=====================================");
+            System.out.print("Enter your choice: ");
+
+            try {
+                int choice = ise.nextInt();
+                ise.nextLine(); // Consume newline
+
+                switch (choice) {
+                    case 1:
+                        // Call the existing CPU.displayinfo() method
+                        System.out.println("\n--- Launching CPU Information Module ---\n");
+                        System.out.println("\n--- all / cores / frequency / cache ---\n");
+                        //Call the CPU info method
+                        CPU.displayinfo();
+                        break;
+                    case 2:
+                        // Call CPU Load Graph method
+                        CpuGraph();
+                        break;
+                    case 0:
+                        inCpuMenu = false;
+                        break;
+                    default:
+                        System.out.println("\n[ERROR] Invalid choice. Please enter 1 or 2.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("\n[ERROR] Invalid input. Please enter a number.");
+                ise.nextLine(); // Clear invalid input
+            }
+        }
+    }
+
     public static void displayinfo() {
 
         String input1;
 
         // processor of type centralproceesor
          CentralProcessor processor = getCpuCores();
-        
-         Scanner ise = new Scanner(System.in);
         
             System.out.print(" What would you like to know about the CPU? ");
              input1 = ise.nextLine().toLowerCase();
@@ -58,6 +102,7 @@ public class CPU {
               
              
                for (ProcessorCache cache : caches) {
+                System.out.println(cache);
 
                 String change = String.valueOf(cache.getLevel());
                   
@@ -74,48 +119,38 @@ public class CPU {
                   while (option != 4) {
               
                     
-                    System.out.print(" Which cache information would you like to know about? \n L1 \n L2  \n L3 \n 4 to exit: ");
+                    System.out.print(" Which cache level would you like to know about? \n 1 \n 2  \n 3 \n 4 to exit: ");
                       option = ise.nextInt();
 
-                    
+                
                        switch (option) {
                           
                          case 1:
-                         int limit1 = c1; // limit is number of level 1 caches ie 3
-                         c1 = size - c1; // this creates index
-
-                         while (limit1 < size) {
-                             System.out.println(" Cache Level: " + ((List<ProcessorCache>) caches).get(limit1).getLevel());
-                             System.out.println(" Cache Type: " + ((List<ProcessorCache>) caches).get(limit1).getType());
-                             System.out.println(" Cache Size: " + ((List<ProcessorCache>) caches).get(limit1).getCacheSize() + " bytes");
-                               limit1++; // increase until all level 1 caches are printed
-                               c1++;
+                         for (int i = 0; i < c1; i ++) {
+                            int index = (size - 1) - i;
+                             System.out.println(" Cache Level: " + ((List<ProcessorCache>) caches).get(index).getLevel());
+                             System.out.println(" Cache Type: " + ((List<ProcessorCache>) caches).get(index).getType());
+                             System.out.println(" Cache Size: " + ((List<ProcessorCache>) caches).get(index).getCacheSize() + " bytes");
                          }
-                              break;
+                        break;
                          
-                         case 2:  
-                         int limit2 = c2; // limit is number of level 2 caches ie 2
-                         c2 = size - (c1 + c2);
-                         int start2 = 0;
+                         case 2: 
 
-                         while (start2 < limit2) {
-                             System.out.println(" Cache Level: " + ((List<ProcessorCache>) caches).get(c2).getLevel());
-                             System.out.println(" Cache Type: " + ((List<ProcessorCache>) caches).get(c2).getType());
-                             System.out.println(" Cache Size: " + ((List<ProcessorCache>) caches).get(c2).getCacheSize() + " bytes"); 
-                              start2++; //  increase until all level 2 caches are printed
-                              c2++;   
+                         for (int i = 0; i < c2; i ++) {
+                            int index = (size - 1) - i - c1;
+
+                             System.out.println(" Cache Level: " + ((List<ProcessorCache>) caches).get(index).getLevel());
+                             System.out.println(" Cache Type: " + ((List<ProcessorCache>) caches).get(index).getType());
+                             System.out.println(" Cache Size: " + ((List<ProcessorCache>) caches).get(index).getCacheSize() + " bytes");  
                          } 
                               break;
 
                          case 3:        
-                         int limit3 = c3; // limit is number of level 3 caches ie 1
-                         c3 = size - (c1 + c2 + c3); // should always equal 0 as first one will always be level 3 cache
-
-                         while (c3 < limit3) {
-                             System.out.println(" Cache Level: " + ((List<ProcessorCache>) caches).get(c3).getLevel());
-                             System.out.println(" Cache Type: " + ((List<ProcessorCache>) caches).get(c3).getType());
-                             System.out.println(" Cache Size: " + ((List<ProcessorCache>) caches).get(c3).getCacheSize() + " bytes"); 
-                              c3++;  
+                         for (int i = 0; i < c3; i ++) {
+                            int index = (size - 1) - i - c1 - c2;
+                             System.out.println(" Cache Level: " + ((List<ProcessorCache>) caches).get(index).getLevel());
+                             System.out.println(" Cache Type: " + ((List<ProcessorCache>) caches).get(index).getType());
+                             System.out.println(" Cache Size: " + ((List<ProcessorCache>) caches).get(index).getCacheSize() + " bytes"); 
                          } 
 
                               break;
@@ -160,6 +195,72 @@ public class CPU {
          }
            
      } // displayinfo
+
+     public static void CpuGraph() {
+        // Local instances to avoid interfering with the global ones
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+
+        CentralProcessor processor = hal.getProcessor();
+        final int graphWidth = 50, graphHeight = 10;
+        // Compute current CPU load percentage
+        double[] cpuHistory = new double[graphWidth];
+        long[] prevTicks = processor.getSystemCpuLoadTicks();
+        
+        while (true) {
+            double load = processor.getSystemCpuLoadBetweenTicks(prevTicks) * 100;
+            prevTicks = processor.getSystemCpuLoadTicks();
+            // Shift history left and add new load value
+            System.arraycopy(cpuHistory, 1, cpuHistory, 0, graphWidth - 1);
+            cpuHistory[graphWidth - 1] = load;
+
+            // Clear console (ANSI escape codes)
+            /*To clear the screen to a new frame, the ANSI code "\033[H\033[2J" is used, 
+            * which does not work in all Windows terminals, 
+            * but works fine in VS Code or WSL and in classic UNIX terminals.
+            */
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            System.out.println("=".repeat(50));
+            System.out.println("CPU: " + processor.getProcessorIdentifier().getName());
+            System.out.println("-".repeat(50));
+            
+            // Draw dynamic CPU graph from bottom (high %) to top (low %)
+            // Each row represents a level of CPU usage threshold
+            for (int h = graphHeight-1; h >= 0; h--) {
+                double threshold = ((double)h / (graphHeight-1)) * 100.0;
+                // Print each column based on whether usage exceeds threshold
+                /*The graph is built from the bottom up: in each line of the graph, 
+                * the symbol '█' is displayed if the corresponding history value
+                * exceeds % for that line (the higher the row, the higher the “threshold”). 
+                */
+                for (int x = 0; x < graphWidth; x++)
+                    System.out.print(cpuHistory[x] >= threshold ? "█" : " ");
+                System.out.println();
+            }
+            System.out.println("_".repeat(graphWidth));
+            System.out.printf("CPU Usage:   %.1f%%\n\n", load);
+            System.out.println("=".repeat(50));
+            System.out.println("\nPress Enter to exit...");
+            // Wait 500 ms, exit the loop if key pressed
+            try {
+                // System.in.available() allows checking if user pressed ENTER
+                if (System.in.available() > 0) {
+            break;  // Exiting the loop when a key is pressed
+        }
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                //An InterruptedException error causes 
+                //a forced exit (a graceful termination of the thread when stopped).
+                Thread.currentThread().interrupt();
+            break;
+            } catch (Exception e) {
+                // Catch any other exceptions (like IO exceptions)
+                e.printStackTrace();
+            }
+        } //while ends
+    } //CpuGraph ends
+
  } // cpu
         
 
