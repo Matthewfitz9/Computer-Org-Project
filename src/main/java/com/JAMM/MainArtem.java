@@ -67,7 +67,7 @@ public class MainArtem {
             System.out.print("Enter your choice: ");
 
             try {
-                int choice = scanner.nextInt();
+                String choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
 
                 /*
@@ -233,12 +233,14 @@ public class MainArtem {
                         break;
                     case 2:
                         // Call the existing Disk2.displayDiscInfo() method with user input
-                        System.out.println("\n--- Keyword-based Disk Search ---");
+                        System.out.println("\n===== Keyword-based Disk Search =====");
                         System.out.println("Try keywords like: name, model, size, serial, partition, all");
+                        System.out.println("=======================================");
                         System.out.print("Enter search keyword: ");
+
                         String keyword = scanner.nextLine();
                         //
-                        Disk2 disk2Obj = new Disk2(); // Create Disk2 instance
+                         Disk2 disk2Obj = new Disk2(); // Create Disk2 instance
                         disk2Obj.displayDiscInfo(keyword);
                         
                         System.out.println("\nPress Enter to continue...");
@@ -309,7 +311,7 @@ public class MainArtem {
                 switch (choice) {
                     case 1:
                         // Display all USB device info
-                        System.out.println("\n--- Launching USB Information Module ---\n");
+                        System.out.println("\n===== Launching USB Information Module =====\n");
                         //
                         USB usbObj = new USB();
                         // Call the existing USB.displayUSBInfo() method
@@ -349,7 +351,7 @@ public class MainArtem {
                 switch (choice) {
                     case 1:
                         // Calls static method to print all PCI devices
-                        System.out.println("\n--- PCI Device Information ---");
+                        System.out.println("\n===== PCI Device Information =====");
                         Pci.displayPci(hal);
                         System.out.println("\nPress Enter to continue...");
                         scanner.nextLine();

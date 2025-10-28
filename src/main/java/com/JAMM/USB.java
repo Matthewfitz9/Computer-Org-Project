@@ -44,7 +44,7 @@ public class USB {
                 System.out.println("2. Vendor information");
                 System.out.println("3. Product information");
                 System.out.println("4. Device information");
-                System.out.println("5. Exit");
+                System.out.println("0. Exit");
                 System.out.print("Enter: ");
                 int choice = sc.nextInt();
 
@@ -135,7 +135,7 @@ public class USB {
                             }
                         }
                         break;
-                    case 5:
+                    case 0:
                         System.out.println("Now exiting this programme, bye :)");
                         return;
                     default:

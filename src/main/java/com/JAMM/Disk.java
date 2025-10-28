@@ -63,12 +63,12 @@ public class Disk {
         while (true) {
             System.out.println("\nEnter the information you wish to know about.");
             System.out.println("Options: Name, Model, Partition, bytes read by disk, Size, Serial number.");
-            System.out.println("Type 'exit' to quit.");
+            System.out.println("Type '0' to quit.");
             System.out.print("Enter choice: ");
             String option = sc.nextLine();
 
             // If the user types "exit", end the loop and terminate the program
-            if (option.equalsIgnoreCase("exit")) {
+            if (option.equalsIgnoreCase("0")) {
                 System.out.println("Exiting program...");
                 break;
             }
