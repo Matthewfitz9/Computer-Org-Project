@@ -1,5 +1,6 @@
 package com.JAMM; 
 
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -8,6 +9,7 @@ import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.ProcessorCache;
 import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.Sensors;
 
 public class CPU {
 
@@ -82,11 +84,23 @@ public class CPU {
             System.out.println(" Physical Cores: " + processor.getPhysicalProcessorCount());
             System.out.println(" Logical Cores: " + processor.getLogicalProcessorCount());
         } 
-        
+
         else if ((input1.contains("frequency")) || (input1.contains("freq"))) {
-           
-            System.out.println("=== CPU Frequency Information ===");
-            System.out.println(" Max Frequency: " + processor.getMaxFreq() + " GHz");
+         
+
+            long[] freqs = processor.getCurrentFreq();
+            double avrgFreq = 0.0;
+
+            long total = 0;
+             for (long f : freqs) {
+                total += f;
+            }
+            avrgFreq = (total / (double) freqs.length) / 1_000_000_000.0;
+       
+
+            System.out.println("=== Frequency Information ===");
+            System.out.println(" Max Frequency: " + (processor.getMaxFreq() / 1000000000.0)+ " GHz");
+            System.out.printf(" Current Frequency: %.3f GHz%n", avrgFreq);
         } 
        
         else if ((input1.contains("cache")) || (input1.contains("caches"))) {
@@ -183,9 +197,16 @@ public class CPU {
 
             System.out.println("=== CPU Information ===");
             System.out.println(" Processor: " + processor.getProcessorIdentifier().getName());
+            System.out.println(" Identifier: " + processor.getProcessorIdentifier().getIdentifier());
+            System.out.println(" Microarchitecture: " + processor.getProcessorIdentifier().getMicroarchitecture());
+            System.out.println(" Vendor ID: " + processor.getProcessorIdentifier().getVendor());
             System.out.println(" Physical Cores: " + processor.getPhysicalProcessorCount());
             System.out.println(" Logical Cores: " + processor.getLogicalProcessorCount());
-            System.out.println(" Max Frequency: " + processor.getMaxFreq() + " GHz");
+            System.out.println(" Max Frequency: " + (processor.getMaxFreq() / 1000000000.0) + " GHz");
+            System.out.println(" Caches: " + processor.getProcessorCaches());
+
+            long[] prevTicks = processor.getSystemCpuLoadTicks();
+            System.out.println(" Usage: " + String.format("%.1f%%", processor.getSystemCpuLoadBetweenTicks(prevTicks) * 100));
 
         } 
        
