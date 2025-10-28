@@ -67,8 +67,7 @@ public class MainArtem {
             System.out.print("Enter your choice: ");
 
             try {
-                String choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+                String choice = scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
 
                 /*
                  * Calls to other classes (CPU, Memory, Disk, Disk2, USB, Pci):
@@ -77,63 +76,74 @@ public class MainArtem {
                  */
                 switch (choice) {
                     /*
-                     * After calling, for example, cpuMenu(), 
-                     * control is completely transferred to this method. 
-                     * It again implements an internal menu and mechanics similar to the main one: 
-                     * the user selects the next step, and again, 
+                     * After calling, for example, cpuMenu(),
+                     * control is completely transferred to this method.
+                     * It again implements an internal menu and mechanics similar to the main one:
+                     * the user selects the next step, and again,
                      * the required logic (e.g., a graph, detailed information) is called via a switch statement.
                      */
-                    case 1:
+                    case "1":
+                    case "cpu":
+                    case "cpu information":
                         CPU.cpuMenu(); // Enter CPU submenu
                         break;
-                    case 2:
+                    case "2":
+                    case "memory":
+                    case "memory information":
                         memoryMenu();
                         break;
-                    case 3:
+                    case "3":
+                    case "disk":
+                    case "disk information":
                         diskMenu();
                         break;
-                    case 4:
+                    case "4":
+                    case "usb":
+                    case "usb devices":
                         usbMenu();
                         break;
-                    case 5:
+                    case "5":
+                    case "pci":
+                    case "pci devices":
                         pciMenu();
                         break;
-                    case 6:
-                        System.out.println("\n========== ABOUT JAMM PROJECT ==========");
-                        System.out.println("JAMM (Java Advanced Monitoring & Management) — this is an educational project,");
-                        System.out.println("designed to analyze and display hardware characteristics");
-                        System.out.println("software using the OSHI library. The program allows");
-                        System.out.println("view information about CPU, memory, disks, USB and PCI devices.");
+                    case "6":
+                    case "about":
+                    case "about jamm project":
+                        System.out.println("\n====== About JAMM Project =======");
+                        System.out.println("Java Advanced Monitoring & Management");
+                        System.out.println("using OSHI library to display CPU, memory,");
+                        System.out.println("disks, USB and PCI devices information.");
+                        System.out.println("");
                         System.out.println("\nProject developers:");
                         System.out.println("1. Joshua Corcoran");
                         System.out.println("2. Artem Bosyi");
                         System.out.println("3. Matthew Fitzgerald");
                         System.out.println("4. Mathieu Gril");
-                        System.out.println("========================================");
-                        System.out.println("\nPress Enter to return to the main menu...");
-                        scanner.nextLine();
+                        System.out.println("---------------------");
                         break;
-                    case 0:
-                    // Exit condition
-                        System.out.println("\n========================================");
-                        System.out.println("  Exiting System Information Viewer");
-                        System.out.println("           Goodbye! :)");
-                        System.out.println("========================================\n");
-                        running = false;
-                        break;
+                    case "0":
+                    case "exit":
+                    case "quit":
+                        // Exit condition
+                        System.out.println("========Exiting=========");
+                        System.out.println("System Information Viewer");
+                        System.out.println("------Goodbye! :)-------\n");
+                        return; // Exit the program
                     default:
-                        System.out.println("\n[ERROR] Invalid choice. Please enter a number between 1 and 6.");
+                        System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.");
                 } //switch ends
                 /*
-                 * Handle errors using try/catch InputMismatchException. 
-                 * If the user enters something other than a number, the program doesn't crash, 
+                 * Handle errors using try/catch InputMismatchException.
+                 * If the user enters something other than a number, the program doesn't crash,
                  * but displays a message and waits for valid input.
                  */
-            } catch (InputMismatchException e) {
+            }
+            catch (InputMismatchException e) {
                 // Input wasn't an integer, handle gracefully
                 System.out.println("\n[ERROR] Invalid input. Please enter a number.");
                 /*
-                 * After each scan of a number, 
+                 * After each scan of a number,
                  * scanner.nextLine() is performed to remove unnecessary
                  *  line feeds and avoid input confusion.
                  */
@@ -219,34 +229,33 @@ public class MainArtem {
             System.out.print("Enter your choice: ");
 
             try {
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+                String choice = scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
 
                 switch (choice) {
-                    case 1:
+                    case "1":
+                    case "view":
+                    case "view all disk information":
                         System.out.println("\n--- Launching Disk Information Module ---");
-                        Disk diskObj = new Disk(); // Create Disk instance
+                        //Disk diskObj = new Disk(); // Create Disk instance
                         // Call the existing Disk.displayDiscInfo() method
-                        diskObj.displayDiscInfo();
-                        System.out.println("\nPress Enter to continue...");
-                        scanner.nextLine();
+                        //diskObj.displayDiscInfo();
                         break;
-                    case 2:
+                    case "2":
+                    case "search disk information":
+                    case "search":
                         // Call the existing Disk2.displayDiscInfo() method with user input
                         System.out.println("\n===== Keyword-based Disk Search =====");
-                        System.out.println("Try keywords like: name, model, size, serial, partition, all");
+                        System.out.println("Options: Name, Model, Partition, bytes read by disk, Size, Serial number.");
                         System.out.println("=======================================");
                         System.out.print("Enter search keyword: ");
 
                         String keyword = scanner.nextLine();
                         //
-                         Disk2 disk2Obj = new Disk2(); // Create Disk2 instance
-                        disk2Obj.displayDiscInfo(keyword);
-                        
-                        System.out.println("\nPress Enter to continue...");
-                        scanner.nextLine();
+                         Disk disk0Obj = new Disk(); // Create Disk instance
+                        disk0Obj.displayDiscInfo(keyword);
                         break;
-                    case 0:
+                    case "0":
+                    case "exit":
                         inDiskMenu = false;
                         break;
                     default:
@@ -254,7 +263,7 @@ public class MainArtem {
                     } //switch ends
                 //
                 } catch (InputMismatchException e) {
-                    System.out.println("\n[ERROR] Invalid input. Please enter a number.");
+                    System.out.println("\n[ERROR] Invalid input. Please try again.");
                     scanner.nextLine(); // Clear invalid input
                 }
         }
@@ -305,11 +314,13 @@ public class MainArtem {
             System.out.print("Enter your choice: ");
 
             try {
-                int choice = scanner.nextInt();
+                String choice = scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
                 scanner.nextLine(); // Consume newline
 
                 switch (choice) {
-                    case 1:
+                    case "1":
+                    case "view usb information":
+                    case "usb":
                         // Display all USB device info
                         System.out.println("\n===== Launching USB Information Module =====\n");
                         //
@@ -317,7 +328,8 @@ public class MainArtem {
                         // Call the existing USB.displayUSBInfo() method
                         usbObj.displayUSBInfo();
                         break;
-                    case 0:
+                    case "0":
+                    case "exit":
                         inUsbMenu = false;
                         break;
                     default:
@@ -345,22 +357,25 @@ public class MainArtem {
             System.out.print("Enter your choice: ");
 
             try {
-                int choice = scanner.nextInt();
+                String choice = scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
                 scanner.nextLine(); // Consume newline
 
                 switch (choice) {
-                    case 1:
+                    case "1":
+                    case "view all pci devices":
+                    case "all":
                         // Calls static method to print all PCI devices
                         System.out.println("\n===== PCI Device Information =====");
                         Pci.displayPci(hal);
-                        System.out.println("\nPress Enter to continue...");
-                        scanner.nextLine();
                         break;
-                    case 2:
+                    case "2":
+                    case "view pci devices details":
+                    case "details":
                     // Enter extended submenu for more specific PCI info
                         pciSubmenu();
                         break;
-                    case 0:
+                    case "0":
+                    case "exit":
                         inPciMenu = false;
                         break;
                     default:
@@ -390,11 +405,13 @@ public class MainArtem {
             System.out.print("Enter your choice: ");
 
             try {
-                int choice = scanner.nextInt();
+                String choice = scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
                 scanner.nextLine(); // Consume newline
 
                 switch (choice) {
-                    case 1:
+                    case "1":
+                    case "graphic cards":
+                    case "graphic":
                         System.out.println("\n========== GRAPHICS CARDS ==========");
                         hal.getGraphicsCards().forEach(gpu -> {
                             System.out.println("\n--- Graphics Card ---");
@@ -405,10 +422,10 @@ public class MainArtem {
                             System.out.println("VRAM: " + gpu.getVRam() + " bytes");
                         });
                         System.out.println("====================================");
-                        System.out.println("\nPress Enter to continue...");
-                        scanner.nextLine();
                         break;
-                    case 2:
+                    case "2":
+                    case "network devices":
+                    case "network":
                         // List all real (non-VM) network devices and their IP/MAC
                         System.out.println("\n========== NETWORK DEVICES ==========");
                         hal.getNetworkIFs().forEach(netDevice -> {
@@ -428,10 +445,10 @@ public class MainArtem {
                             }
                         });
                         System.out.println("=====================================");
-                        System.out.println("\nPress Enter to continue...");
-                        scanner.nextLine();
                         break;
-                    case 3:
+                    case "3":
+                    case "storage devices":
+                    case "storage":
                         // List all storage devices with model, size, and serial
                         System.out.println("\n========== STORAGE DEVICES ==========");
                         hal.getDiskStores().forEach(storage -> {
@@ -441,10 +458,9 @@ public class MainArtem {
                             System.out.println("Serial: " + storage.getSerial());
                         });
                         System.out.println("=====================================");
-                        System.out.println("\nPress Enter to continue...");
-                        scanner.nextLine();
                         break;
-                    case 4:
+                    case "4":
+                    case "sound cards":
                         // List all detected sound cards
                         System.out.println("\n========== SOUND CARDS ==========");
                         hal.getSoundCards().forEach(soundCard -> {
@@ -454,10 +470,9 @@ public class MainArtem {
                             System.out.println("Name: " + soundCard.getName());
                         });
                         System.out.println("=================================");
-                        System.out.println("\nPress Enter to continue...");
-                        scanner.nextLine();
                         break;
-                    case 0:
+                    case "0":
+                    case "exit":
                         inPciSubmenu = false;
                         break;
                     default:

@@ -20,7 +20,7 @@ public class Disk {
 
         // Loop through each detected disk
         for (HWDiskStore disk : diskStore) {
-            System.out.println("\n----Disk Information----");
+            System.out.println("\n====Disk Information====");
 
             // Check for keywords
             if (input.contains("name")) {
