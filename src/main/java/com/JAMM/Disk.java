@@ -1,66 +1,145 @@
 package com.JAMM;
 
-import java.util.Scanner;
-import oshi.SystemInfo;
-import oshi.hardware.*;
+import java.io.IOException;
 import java.util.List;
 
-public class Disk {
+import oshi.SystemInfo;
+import oshi.hardware.HWDiskStore;
+import oshi.hardware.HWPartition;
+import oshi.hardware.HardwareAbstractionLayer;
 
-    public void displayDiscInfo(String choice) {
+public class Disk {
+    private static List<HWDiskStore> diskStore;
+
+    public static void diskMenu() {
         // Create SystemInfo and HardwareAbstractionLayer objects to access hardware data
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
 
         // Get the list of all physical disks connected to the system
-        List<HWDiskStore> diskStore = hal.getDiskStores();
+        diskStore = hal.getDiskStores();
 
-        // Convert input to lowercase
-        String input = choice.toLowerCase();
+        while (true) {
+            
+            System.out.println("=== Available Disk Devices ===");
+            for (int i = 0; i < diskStore.size(); i++) {
+                System.out.println((i + 1) + ". " + diskStore.get(i).getName());
+            }
 
+<<<<<<< HEAD
         // Loop through each detected disk
         for (HWDiskStore disk : diskStore) {
             System.out.println("\n====Disk Information====");
+=======
+            System.out.println("0. Exit");
+            System.out.print("\nEnter the list number of the disk you want to examine: ");
+            String choice = Main.scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
+            System.out.println("");
+>>>>>>> 63a22ea7a12a7752aee554b3192b73da990b5b80
 
-            // Check for keywords
-            if (input.contains("name")) {
-                System.out.println("Name: " + disk.getName());
+            if (choice.contains("0") || 
+                    choice.contains("exit") || 
+                    choice.contains("quit")) {
+                System.out.println("Returning to main menu...\n");
+                return;
             }
-            else if (input.contains("model") || input.contains("mod")) {
-                System.out.println("Model: " + disk.getModel());
-            }
-            else if (input.contains("partition") || input.contains("part")) {
-                System.out.println("Partition info: " + disk.getPartitions());
-            }
-            else if (input.contains("read") || input.contains("bytes")) {
-                System.out.println("Number of bytes read by the disk: " + disk.getReadBytes());
-            }
-            else if (input.contains("size") || input.contains("capacity")) {
-                System.out.println("Size: " + disk.getSize());
-            }
-            else if (input.contains("serial") || input.contains("number") || input.contains("ser")) {
-                System.out.println("Serial of disk: " + disk.getSerial());
-            }
-            else if (input.contains("all") || input.contains("everything")) {
-                System.out.println("Name: " + disk.getName());
-                System.out.println("Model: " + disk.getModel());
-                System.out.println("Partition info: " + disk.getPartitions());
-                System.out.println("Number of bytes read by the disk: " + disk.getReadBytes());
-                System.out.println("Size: " + disk.getSize());
-                System.out.println("Serial of disk: " + disk.getSerial());
-            }
-            else {
-                System.out.println("No matching information found. Try keywords like name, model, size, serial, etc.");
+
+            displayDiscInfo(choice);
+        }
+    }
+
+    private static void displayDiscInfo(String choice) {
+
+        int diskNum;
+        
+        try {
+            diskNum = Integer.valueOf(choice) - 1;
+        } catch (Exception e) {
+            System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.\n");
+            return;
+        }
+
+        HWDiskStore disk = diskStore.get(diskNum);
+
+        while (true) {
+            
+            System.out.println("\n=== " + diskStore.get(diskNum).getName() + " ===\n");
+            System.out.println("1. General information");
+            System.out.println("2. Partition information");
+            System.out.println("3. Disk speed");
+            System.out.println("0. Exit");
+            System.out.print("\nEnter your choice: ");
+            String diskChoice = Main.scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
+            System.out.println("");
+            
+            if (diskChoice.contains("1") || 
+                diskChoice.contains("general info") || 
+                diskChoice.contains("general")) {
+                showGeneralInfo(disk);
+
+            } else if (diskChoice.contains("2") || 
+                    diskChoice.contains("partition") || 
+                    diskChoice.contains("part")) {
+                showPartitionInfo(disk);
+
+            } else if (diskChoice.contains("3")  || 
+                    diskChoice.contains("speed") || 
+                    diskChoice.contains("disk speed")) {
+                showDiskSpeed(disk);
+
+            } else if (diskChoice.contains("0") || 
+                    diskChoice.contains("exit") || 
+                    diskChoice.contains("quit")) {
+                System.out.println("Returning to disk select menu...\n");
+                return;
+
+            } else { // This replaces the 'default' case
+                System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.");
             }
         }
     }
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        Disk info = new Disk();  // Create an instance of Disk to call methods
+    private static void showGeneralInfo(HWDiskStore disk) {
+        System.out.println("== Disk Information ==\n");
+        System.out.println(" Model: " + disk.getModel());
+        System.out.println(" Size: " + (disk.getSize() / Math.pow(1024, 3)) + " GiB");
+        System.out.println(" Serial number: " + disk.getSerial());
+    
+    }
 
-        // Infinite loop until the user decides to quit
+    private static void showPartitionInfo(HWDiskStore disk) {
+        List<HWPartition> partitions = disk.getPartitions();
+
+        if (partitions.isEmpty()) {
+            System.out.println("\nNo partitions found on this disk.\n");
+            return;
+        }
+
+        // Loop through partitions on the current disk
+        for (HWPartition part : partitions) {
+            double sizeGiB = (double) part.getSize() / 1073741824.0; // Convert bytes to GiB
+
+            System.out.println("\nName: " + part.getName());
+            System.out.println("ID: " + part.getIdentification());
+            System.out.println("Type: " + part.getType());
+            System.out.println("Size: " + sizeGiB + " GiB");
+            System.out.println("Mount point: " + part.getMountPoint() + "\n");
+        }
+    }
+
+    private static void showDiskSpeed(HWDiskStore disk) {
+        // --- Initial values ---
+        long prevReadBytes = disk.getReadBytes();
+        long prevWriteBytes = disk.getWriteBytes();
+        long prevTimeStamp = disk.getTimeStamp(); // Use OSHI's timestamp
+
+        System.out.println("");
+        System.out.println("");
+        
+        
+        // --- Live Loop ---
         while (true) {
+<<<<<<< HEAD
             System.out.println("\nEnter the information you wish to know about.");
             System.out.println("Options: Name, Model, Partition, bytes read by disk, Size, Serial number.");
             System.out.println("Type '0' to quit.");
@@ -70,14 +149,78 @@ public class Disk {
             // If the user types "exit", end the loop and terminate the program
             if (option.equalsIgnoreCase("0")) {
                 System.out.println("Exiting program...");
+=======
+            // Wait 1 second before getting new stats
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+>>>>>>> 63a22ea7a12a7752aee554b3192b73da990b5b80
                 break;
             }
 
-            // Call displayDiscInfo() with the user’s input
-            info.displayDiscInfo(option);
-        }
+            // --- IMPORTANT: Refresh disk stats ---
+            if (!disk.updateAttributes()) {
+                System.out.println("Failed to update disk stats. Exiting.");
+                break; // Exit if update fails (e.g., disk removed)
+            }
 
-        // closes the scanner
-        sc.close();
+            // --- Get new values ---
+            long newReadBytes = disk.getReadBytes();
+            long newWriteBytes = disk.getWriteBytes();
+            long newTimeStamp = disk.getTimeStamp();
+
+            // --- Calculate delta (difference) ---
+            long readDelta = newReadBytes - prevReadBytes;
+            long writeDelta = newWriteBytes - prevWriteBytes;
+            long timeDeltaMs = newTimeStamp - prevTimeStamp; // Time difference in milliseconds
+
+            // --- Calculate speed (Bytes per Second) ---
+            // Avoid division by zero if timeDelta is too small
+            double readSpeedBps = (timeDeltaMs > 0) ? (double) readDelta / (timeDeltaMs / 1000.0) : 0;
+            double writeSpeedBps = (timeDeltaMs > 0) ? (double) writeDelta / (timeDeltaMs / 1000.0) : 0;
+
+            // --- Convert to Megabytes per Second (MB/s) ---
+            double readSpeedMBs = readSpeedBps / 1_000_000.0;
+            double writeSpeedMBs = writeSpeedBps / 1_000_000.0;
+
+            // --- Display Live Speeds ---
+            // Using \r (carriage return) to overwrite the previous line for a cleaner look
+            // 1. Move cursor UP one line (to where the speed line should be)
+            System.out.print("\033[F");
+            System.out.print("\033[F");
+
+            // 2. Print the speed line, overwriting with spaces using \r and padding
+            System.out.printf("\rRead: %8.2f MB/s | Write: %8.2f MB/s%-30s",
+                            readSpeedMBs, writeSpeedMBs, ""); // Pad with spaces
+
+            // 4. (Optional) Clear the exit message line before re-printing it
+            //    This helps if the terminal size changes.
+            //System.out.print("\r\033[K"); // Move to start, clear line
+            System.out.println("");
+            System.out.println("");
+
+            // 5. Re-print the exit message (without a newline) on the line below the speeds
+            System.out.print("Press Enter to exit..."); // Re-print if you cleared it
+
+            System.out.flush(); // Ensure output is immediate
+            // --- Update previous values for the next loop ---
+            prevReadBytes = newReadBytes;
+            prevWriteBytes = newWriteBytes;
+            prevTimeStamp = newTimeStamp;
+
+            // --- Check for Exit (Optional - e.g., press Enter to stop) ---
+            try {
+                if (System.in.available() > 0) {
+                    System.out.println("\nExiting disk speed monitor...");
+                    // Clear the input buffer
+                    System.in.read(new byte[System.in.available()]);
+                    break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                break;
+            }
+        } // while loop ends
     }
 }
