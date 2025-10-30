@@ -20,7 +20,6 @@ public class Disk {
         diskStore = hal.getDiskStores();
 
         while (true) {
-            
             System.out.println("=== Available Disk Devices ===");
             for (int i = 0; i < diskStore.size(); i++) {
                 System.out.println((i + 1) + ". " + diskStore.get(i).getName());
@@ -98,7 +97,6 @@ public class Disk {
         System.out.println(" Model: " + disk.getModel());
         System.out.println(" Size: " + (disk.getSize() / Math.pow(1024, 3)) + " GiB");
         System.out.println(" Serial number: " + disk.getSerial());
-    
     }
 
     private static void showPartitionInfo(HWDiskStore disk) {
@@ -122,7 +120,7 @@ public class Disk {
     }
 
     private static void showDiskSpeed(HWDiskStore disk) {
-        // --- Initial values ---
+        // Initial values
         long prevReadBytes = disk.getReadBytes();
         long prevWriteBytes = disk.getWriteBytes();
         long prevTimeStamp = disk.getTimeStamp(); // Use OSHI's timestamp
@@ -131,7 +129,7 @@ public class Disk {
         System.out.println("");
         
         
-        // --- Live Loop ---
+        // Live Loop
         while (true) {
             // Wait 1 second before getting new stats
             try {
@@ -141,32 +139,32 @@ public class Disk {
                 break;
             }
 
-            // --- IMPORTANT: Refresh disk stats ---
+            // Refresh disk stats
             if (!disk.updateAttributes()) {
                 System.out.println("Failed to update disk stats. Exiting.");
                 break; // Exit if update fails (e.g., disk removed)
             }
 
-            // --- Get new values ---
+            // Get new values
             long newReadBytes = disk.getReadBytes();
             long newWriteBytes = disk.getWriteBytes();
             long newTimeStamp = disk.getTimeStamp();
 
-            // --- Calculate delta (difference) ---
+            // Calculate delta (difference)
             long readDelta = newReadBytes - prevReadBytes;
             long writeDelta = newWriteBytes - prevWriteBytes;
             long timeDeltaMs = newTimeStamp - prevTimeStamp; // Time difference in milliseconds
 
-            // --- Calculate speed (Bytes per Second) ---
+            // Calculate speed (Bytes per Second)
             // Avoid division by zero if timeDelta is too small
             double readSpeedBps = (timeDeltaMs > 0) ? (double) readDelta / (timeDeltaMs / 1000.0) : 0;
             double writeSpeedBps = (timeDeltaMs > 0) ? (double) writeDelta / (timeDeltaMs / 1000.0) : 0;
 
-            // --- Convert to Megabytes per Second (MB/s) ---
+            // Convert to Megabytes per Second (MB/s)
             double readSpeedMBs = readSpeedBps / 1_000_000.0;
             double writeSpeedMBs = writeSpeedBps / 1_000_000.0;
 
-            // --- Display Live Speeds ---
+            //   Display Live Speeds
             // Using \r (carriage return) to overwrite the previous line for a cleaner look
             // 1. Move cursor UP one line (to where the speed line should be)
             System.out.print("\033[F");
@@ -186,12 +184,12 @@ public class Disk {
             System.out.print("Press Enter to exit..."); // Re-print if you cleared it
 
             System.out.flush(); // Ensure output is immediate
-            // --- Update previous values for the next loop ---
+            // Update previous values for the next loop
             prevReadBytes = newReadBytes;
             prevWriteBytes = newWriteBytes;
             prevTimeStamp = newTimeStamp;
 
-            // --- Check for Exit (Optional - e.g., press Enter to stop) ---
+            // Check for Exit (Optional - e.g., press Enter to stop)
             try {
                 if (System.in.available() > 0) {
                     System.out.println("\nExiting disk speed monitor...");
@@ -199,10 +197,11 @@ public class Disk {
                     System.in.read(new byte[System.in.available()]);
                     break;
                 }
+                // prints error
             } catch (IOException e) {
                 e.printStackTrace();
                 break;
             }
-        } // while loop ends
+        }
     }
 }
