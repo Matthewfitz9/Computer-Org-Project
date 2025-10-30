@@ -49,9 +49,7 @@ public class USB {
             String choice = Main.scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
             System.out.println("");
 
-            if (choice.contains("0") || 
-                    choice.contains("exit") || 
-                    choice.contains("quit")) {
+            if (choice.contains("0") || choice.contains("exit") ||  choice.contains("quit")) {
                 System.out.println("Returning to main menu...\n");
                 return;
             }
@@ -65,7 +63,7 @@ public class USB {
         int usbNum;
         
         try {
-            usbNum = Integer.valueOf(choice) - 1;
+            usbNum = Integer.valueOf(choice) - 1; // index for list
         } catch (Exception e) {
             System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.\n");
             return;
@@ -76,6 +74,7 @@ public class USB {
 
         while (true) {
 
+            // sub menu
             System.out.println("\n=== " + usbDevices.get(usbNum).getName() + " ===\n");
             System.out.println("1. General information");
             System.out.println("2. Vendor information");
@@ -106,7 +105,8 @@ public class USB {
             }
         }
     }
-
+    
+    // info for each usb device
     private static void showGeneralInfo(UsbDevice usb) {
         System.out.println("== USB Information ==\n");
 
@@ -129,4 +129,4 @@ public class USB {
         String vendorName = vendorLookup.getOrDefault(vendorId, "Unknown");
         System.out.println("Vendor: " + usb.getVendor() + " (" + vendorName + ")");
     }
-}
+} // class
