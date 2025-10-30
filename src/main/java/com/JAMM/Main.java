@@ -2,25 +2,13 @@ package com.JAMM;
 
 import java.util.Scanner;
 
-import oshi.SystemInfo;
-import oshi.hardware.HardwareAbstractionLayer;
-
 public class Main {
     // Static fields for shared access throughout the class
     public static Scanner scanner;
-    private static SystemInfo si; // SystemInfo instance for hardware access
-    private static HardwareAbstractionLayer hal; // HAL instance for hardware details
 
     public static void main(String[] args) {
-        // Initialize system information objects
-        si = new SystemInfo(); // SystemInfo instance
-        /*
-        * Initialize scanner for user input
-         */
-
-        hal = si.getHardware(); // Hardware Abstraction Layer instance
-        
-        scanner = new Scanner(System.in); // Initialize scanner for user input
+        // Scanner for user input
+        scanner = new Scanner(System.in);
 
         // Display welcome message
         System.out.println("");
@@ -43,6 +31,7 @@ public class Main {
         scanner.close();
     }
 
+    // Main menu provides access to all other modules
     private static void mainMenu() {
         while (true) {
             System.out.println("\n===== Main Menu =====");
@@ -61,7 +50,7 @@ public class Main {
             if (choice.contains("1") || 
                 choice.contains("cpu") || 
                 choice.contains("processor")) {
-                CPU.cpuMenu(); // Assuming CPU.cpuMenu() exists
+                CPU.cpuMenu(); 
 
             } else if (choice.contains("2") || 
                     choice.contains("memory") || 
@@ -69,15 +58,15 @@ public class Main {
                 Memory.showMemoryGraph();
 
             } else if (choice.contains("3") || 
-                    choice.contains("disk")) { // "disk information" is covered by "disk"
+                    choice.contains("disk")) {
                 Disk.diskMenu(); 
 
             } else if (choice.contains("4") || 
-                    choice.contains("usb")) { // "usb devices" is covered by "usb"
+                    choice.contains("usb")) { 
                 USB.usbMenu();
 
             } else if (choice.contains("5") || 
-                    choice.contains("pci")) { // "pci devices" is covered by "pci"
+                    choice.contains("pci")) { 
                 Pci.pciMenu();
 
             } else if (choice.contains("6") || 
@@ -85,7 +74,7 @@ public class Main {
                 SystemInfoModule.systemMenu();
 
             } else if (choice.contains("7") || 
-                    choice.contains("about")) { // "about jamm project" is covered by "about"
+                    choice.contains("about")) {
                 System.out.println("\n====== About JAMM Project =======");
                 System.out.println("Java Advanced Monitoring & Management");
                 System.out.println("using OSHI library to display CPU, memory,");
@@ -98,32 +87,21 @@ public class Main {
                 System.out.println("4. Mathieu Gril");
                 System.out.println("---------------------");
                 System.out.println("\nPress Enter to return to the main menu...");
-                scanner.nextLine(); // Wait for user input
 
+                // Wait for user input
+                scanner.nextLine(); 
+            
             } else if (choice.contains("0") || 
                     choice.contains("exit") || 
                     choice.contains("quit")) {
                 System.out.println("========Exiting=========");
                 System.out.println("System Information Viewer");
                 System.out.println("------Goodbye! :)-------\n");
-                // If this is inside the main loop, you might need 'break;' or 'return;'
-                // depending on your program structure. 'return;' is used assuming this exits a method.
                 return;
 
-            } else { // This replaces the 'default' case
+            } else {
                 System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.");
             }        
         } // while loop ends
     } // mainMenu ends
-
-    // Used by CPU for individual cores
-    public static String createProgressBar(double percent, int barLength) {
-        int filledLength = (int) (barLength * percent);
-        StringBuilder bar = new StringBuilder("[");
-        for (int i = 0; i < barLength; i++) {
-            bar.append(i < filledLength ? "█" : " ");
-        }
-        bar.append("]");
-        return bar.toString();
-    }
 }

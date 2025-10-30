@@ -11,10 +11,9 @@ public class CPU {
     private static CentralProcessor processor;
 
     public static void cpuMenu() {
-        // Get a reference to the processor from the abstracted hardware layer
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
-          
+
         processor = hal.getProcessor();
 
         while (true) {
@@ -76,21 +75,26 @@ public class CPU {
         }
     }
 
+    // Displays general info about the CPU
     private static void showGeneralInfo() {
         System.out.println("=== Processor Information ===");
         System.out.println(" Processor: " + processor.getProcessorIdentifier().getName());
         System.out.println(" Identifier: " + processor.getProcessorIdentifier().getIdentifier());
         System.out.println(" Microarchitecture: " + processor.getProcessorIdentifier().getMicroarchitecture());
+
+        // Divide the max frequency by 10^9 to convert it to GigaHertz
         System.out.println(" Max Frequency: " + (processor.getMaxFreq() / Math.pow(10, 9)) + " GHz");
     
     }
 
+    // How many physical cores and then extra (hyper-threaded) logical cores there
     private static void showCoreInfo() {
             System.out.println("=== Core Information ===");
             System.out.println(" Physical Cores: " + processor.getPhysicalProcessorCount());
             System.out.println(" Logical Cores: " + processor.getLogicalProcessorCount());
     }
 
+    // Sub menu for showing Cache information
     private static void showCacheInfo() {
         List<ProcessorCache> caches = (List<ProcessorCache>) processor.getProcessorCaches();
         
@@ -111,9 +115,10 @@ public class CPU {
                 c1++;
             }
         } 
-    
+        
+        // While loop which takes an input and iterates through each cache in the chosen level to display data
         while (true) {
-            System.out.print("\n=== Which cache level would you like to know about? ===\nLevel 1 \nLevel 2  \nLevel 3 \nTo exit, type 4 or 'exit': ");
+            System.out.print("\n=== Which cache level would you like to know about? ===\nLevel 1 \nLevel 2  \nLevel 3 \nTo exit, type 0 or 'exit': ");
             String choice = Main.scanner.nextLine().trim().replaceAll("\\s{2,}", " ").toLowerCase();
 
             if (choice.contains("1") || 
@@ -143,48 +148,51 @@ public class CPU {
                             System.out.println("This L3 cache size is " + ((List<ProcessorCache>) caches).get(index).getCacheSize() + " bytes"); 
                 } 
 
-            } else if (choice.contains("4")  || 
+            } else if (choice.contains("0")  || 
                     choice.contains("exit") || 
                     choice.contains("quit")) {
                 System.out.println("Exiting cache information menu...");
                 return;
 
-            }  else { // This replaces the 'default' case
+            }  else { 
                 System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.");
             } 
         }  
-    } 
+    }   
 
+    // Live graph of the frequency the CPU is currently running at
     public static void showCpuFrequencyGraph() {
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
         CentralProcessor processor = hal.getProcessor();
 
-        // --- Determine Max Frequency ---
-        // Get the maximum frequency in Hz (this is our 100% mark)
+        // Get the maximum frequency in Hz to be our 100% metric
         long maxFreqHz = processor.getMaxFreq();
+
+        // If we couldn't get max frequency from the CPU itself, get the vendor frequency
         if (maxFreqHz <= 0) {
-            // Fallback: Use vendor frequency if max isn't available
             maxFreqHz = processor.getProcessorIdentifier().getVendorFreq();
         }
+        // If we couldn't get a fallback vendor frequency either, return
         if (maxFreqHz <= 0) {
             System.out.println("Could not determine max CPU frequency.");
-            return; // Can't proceed without a max value
+            return; 
         }
-        final double MAX_FREQ_HZ_DOUBLE = (double) maxFreqHz; // Use double for calculations
 
-        // --- Graph Setup (same as before) ---
+        // Use our max frequency as a constant double (converted to double for calculations)
+        final double MAX_FREQ_HZ_DOUBLE = (double) maxFreqHz; 
+
+        // Graph setup
         final int graphWidth = 50, graphHeight = 10;
-        double[] freqHistory = new double[graphWidth]; // Renamed array
+        double[] freqHistory = new double[graphWidth]; 
 
-        double currentFreqGHz = 0; // Variable to store current freq for display
+        double currentFreqGHz = 0;
 
-        // --- Live Loop ---
         while (true) {
-            // --- Get Current Frequency ---
-            // Get current frequency for *all* cores (returns long[])
+            // Get current frequency for all cores (returns long[])
             long[] currentFreqsHz = processor.getCurrentFreq();
-            // Use the average frequency for the graph (or just the first core: currentFreqsHz[0])
+
+            // Use the average frequency for the graph
             long avgFreqHz = 0;
             if (currentFreqsHz.length > 0) {
                 long sum = 0;
@@ -193,25 +201,27 @@ public class CPU {
                 }
                 avgFreqHz = sum / currentFreqsHz.length;
             }
-            currentFreqGHz = avgFreqHz / 1_000_000_000.0; // For display
+            // Convert it to GHz for display purposes
+            currentFreqGHz = avgFreqHz / 1_000_000_000.0; 
 
-            // --- Scale Frequency to 0-100% for the graph ---
+            // Scale Frequency from 0-100% for the graph 
             double freqPercent = (avgFreqHz / MAX_FREQ_HZ_DOUBLE) * 100.0;
-            freqPercent = Math.min(100.0, Math.max(0.0, freqPercent)); // Clamp between 0 and 100
+            // Clamp it between 0 and 100 incase something went wrong 
+            freqPercent = Math.min(100.0, Math.max(0.0, freqPercent)); 
 
-            // --- Update History ---
-            // Shift history left and add new scaled frequency value
+            // Shift data history left and add new data value
             System.arraycopy(freqHistory, 1, freqHistory, 0, graphWidth - 1);
             freqHistory[graphWidth - 1] = freqPercent;
 
-            // --- Draw Graph (same logic, different data array) ---
+            // Draw the graph by clearing the screen and displaying information
             System.out.print("\033[H\033[2J");
             System.out.flush();
-            System.out.println("=".repeat(graphWidth)); // Adjusted repeat width
-            System.out.println("CPU Frequency Graph"); // Updated title
+            System.out.println("=".repeat(graphWidth)); 
+            System.out.println("CPU Frequency Graph"); 
             System.out.println(processor.getProcessorIdentifier().getName());
             System.out.println("-".repeat(graphWidth));
 
+            // For loop to determine whether each "spot" in the graph should be filled or not
             for (int h = graphHeight - 1; h >= 0; h--) {
                 double threshold = ((double) h / (graphHeight - 1)) * 100.0;
                 for (int x = 0; x < graphWidth; x++) {
@@ -221,66 +231,66 @@ public class CPU {
             }
             System.out.println("_".repeat(graphWidth));
 
-            // --- Display Actual Frequency ---
+            // Display actual Frequency 
             System.out.printf("CPU Frequency: %.2f GHz (%.1f%% of max)\n\n", currentFreqGHz, freqPercent);
             System.out.println("=".repeat(graphWidth));
             System.out.println("\nPress Enter to exit...");
 
-            // --- Wait / Exit (same logic) ---
+            // Wait / Exit 
             try {
                 if (System.in.available() > 0) {
-                    // Clear the input buffer before breaking
+                    // Clear the input buffer before breaking (so input doesn't carry over to the next menu)
                     System.in.read(new byte[System.in.available()]);
                     break;
                 }
-                Thread.sleep(500); // Update frequency twice a second
-            } catch (InterruptedException e) {
+                // Update the graph every half a second
+                Thread.sleep(500); 
+            }
+            // Catch if something tries to interrupt this current thread 
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
-            } catch (Exception e) {
+            } 
+            // Catch any other exceptions such as IO 
+            catch (Exception e) {
                 e.printStackTrace();
             }
         } // while ends
     } // showCpuFrequencyGraph ends  
 
+    // Live graph of the CPU's load
     private static void showCpuLoad() {
-        // Local instances to avoid interfering with the global ones
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
-
         CentralProcessor processor = hal.getProcessor();
+
         final int graphWidth = 50, graphHeight = 10;
-        // Compute current CPU load percentage
+        
+        // Get the current CPU load percentage
         double[] cpuHistory = new double[graphWidth];
         long[] prevTicks = processor.getSystemCpuLoadTicks();
         
         while (true) {
+            // Counts how many "ticks" have passed between the current cpuLoadTicks and the previous cpuLoadTicks, returning a double for CPU load
             double load = processor.getSystemCpuLoadBetweenTicks(prevTicks) * 100;
+            // Update for the next loop
             prevTicks = processor.getSystemCpuLoadTicks();
+
             // Shift history left and add new load value
             System.arraycopy(cpuHistory, 1, cpuHistory, 0, graphWidth - 1);
             cpuHistory[graphWidth - 1] = load;
 
-            // Clear console (ANSI escape codes)
-            /*To clear the screen to a new frame, the ANSI code "\033[H\033[2J" is used, 
-            * which does not work in all Windows terminals, 
-            * but works fine in VS Code or WSL and in classic UNIX terminals.
-            */
+            // Draw the graph by clearing the screen and displaying information
             System.out.print("\033[H\033[2J");
             System.out.flush();
             System.out.println("=".repeat(50));
             System.out.println("CPU: " + processor.getProcessorIdentifier().getName());
             System.out.println("-".repeat(50));
             
-            // Draw dynamic CPU graph from bottom (high %) to top (low %)
-            // Each row represents a level of CPU usage threshold
+            // For loop to determine whether each "spot" in the graph should be filled or not
             for (int h = graphHeight-1; h >= 0; h--) {
                 double threshold = ((double)h / (graphHeight-1)) * 100.0;
                 // Print each column based on whether usage exceeds threshold
-                /*The graph is built from the bottom up: in each line of the graph, 
-                * the symbol '█' is displayed if the corresponding history value
-                * exceeds % for that line (the higher the row, the higher the “threshold”). 
-                */
                 for (int x = 0; x < graphWidth; x++)
                     System.out.print(cpuHistory[x] >= threshold ? "█" : " ");
                 System.out.println();
@@ -289,25 +299,31 @@ public class CPU {
             System.out.printf("CPU Usage:   %.1f%%\n\n", load);
             System.out.println("=".repeat(50));
             System.out.println("\nPress Enter to exit...");
+
             // Wait 500 ms, exit the loop if key pressed
             try {
                 // System.in.available() allows checking if user pressed ENTER
-                if (System.in.available() > 0) {
-            break;  // Exiting the loop when a key is pressed
-        }
+                 if (System.in.available() > 0) {
+                    // Clear the input buffer before breaking (so input doesn't carry over to the next menu)
+                    System.in.read(new byte[System.in.available()]);
+                    break;
+                }
+                // Update the graph every half a second
                 Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //An InterruptedException error causes 
-                //a forced exit (a graceful termination of the thread when stopped).
+            } 
+            // Catch if something tries to interrupt this current thread 
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            break;
-            } catch (Exception e) {
-                // Catch any other exceptions (like IO exceptions)
+                break;
+            } 
+            // Catch any other exceptions (like IO exceptions)
+            catch (Exception e) {
                 e.printStackTrace();
             }
         } //while ends
     } //CpuGraph ends
 
+    // Live graph of the load of each individual Core in the CPU
     private static void showPerCoreLoad() {
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
@@ -317,6 +333,7 @@ public class CPU {
         long[][] prevCoreTicks = processor.getProcessorCpuLoadTicks();
 
         while (true) {
+            // Clear the screen to draw the graph
             System.out.print("\033[H\033[2J");
             System.out.flush();
             System.out.println("=".repeat(50));
@@ -326,26 +343,49 @@ public class CPU {
 
             // Get the load for each core
             double[] coreLoads = processor.getProcessorCpuLoadBetweenTicks(prevCoreTicks);
-            prevCoreTicks = processor.getProcessorCpuLoadTicks(); // Update for next loop
+            // Update for the next loop
+            prevCoreTicks = processor.getProcessorCpuLoadTicks(); 
 
+            // For each core load, use the createProgressBar helper function to display it's load as a percentage
             for (int i = 0; i < coreLoads.length; i++) {
                 double load = coreLoads[i] * 100;
-                System.out.printf("  Core %-2d: %s %.1f%%\n", i, Main.createProgressBar(load / 100, 40), load);
+                System.out.printf("  Core %-2d: %s %.1f%%\n", i, createProgressBar(load / 100, 40), load);
             }
 
             System.out.println("\nPress Enter to return to menu...");
+            // Wait 500 ms, exit the loop if key pressed
             try {
-                if (System.in.available() > 0) {
-                    System.in.read(new byte[System.in.available()]); // Clear buffer
+                // System.in.available() allows checking if user pressed ENTER
+                 if (System.in.available() > 0) {
+                    // Clear the input buffer before breaking (so input doesn't carry over to the next menu)
+                    System.in.read(new byte[System.in.available()]);
                     break;
                 }
-                Thread.sleep(1000); // 1-second-update is fine here
-            } catch (Exception e) {
+                // Update the graph every half a second
+                Thread.sleep(500);
+            } 
+            // Catch if something tries to interrupt this current thread 
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
+            } 
+            // Catch any other exceptions (like IO exceptions)
+            catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }    
+
+    // Helper function for graphing the per core load
+    public static String createProgressBar(double percent, int barLength) {
+        int filledLength = (int) (barLength * percent);
+        StringBuilder bar = new StringBuilder("[");
+        for (int i = 0; i < barLength; i++) {
+            bar.append(i < filledLength ? "█" : " ");
+        }
+        bar.append("]");
+        return bar.toString();
+    }
 }
         
 

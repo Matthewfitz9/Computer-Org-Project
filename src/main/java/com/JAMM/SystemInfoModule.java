@@ -1,32 +1,31 @@
 package com.JAMM;
 
-import java.util.Comparator; // For process list exit
+import java.util.Comparator; 
 import java.util.List;
 
-import oshi.SystemInfo; // For sorting processes
+import oshi.SystemInfo; 
 import oshi.hardware.Baseboard;
 import oshi.hardware.ComputerSystem;
 import oshi.hardware.Firmware;
-import oshi.hardware.HardwareAbstractionLayer; // Motherboard
-import oshi.software.os.OSProcess; // BIOS/UEFI
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.software.os.OSProcess; 
 import oshi.software.os.OperatingSystem;
 import oshi.software.os.OperatingSystem.OSVersionInfo;
 
 public class SystemInfoModule {
 
-    // Store OSHI objects to avoid re-creating them
     private static OperatingSystem os;
     private static HardwareAbstractionLayer hal;
     private static ComputerSystem computerSystem;
 
     public static void systemMenu() {
-        // --- Get System Info ONCE ---
+        // Get System Info
         SystemInfo si = new SystemInfo();
         os = si.getOperatingSystem();
         hal = si.getHardware();
         computerSystem = hal.getComputerSystem();
 
-        // --- Main System Information Menu ---
+        // Main selection menu
         while (true) {
             System.out.println("\n===== System Information Menu =====");
             System.out.println("1. Current processes");
@@ -67,7 +66,7 @@ public class SystemInfoModule {
                        choice.contains("return") ||
                        choice.contains("back")) {
                 System.out.println("Returning to main menu...\n");
-                return; // Exit this menu function
+                return; 
 
             } else {
                 System.out.println("\n[ERROR] Invalid choice. Please enter a number or keyword.");
@@ -75,33 +74,33 @@ public class SystemInfoModule {
         }
     }
 
+    // Live chart displaying the top 15 processes taking up ram, aswell as the current system uptime
     private static void showTopProcesses() {
         SystemInfo si = new SystemInfo();
-        OperatingSystem os = si.getOperatingSystem();
+        os = si.getOperatingSystem();
         
         // Get Total Memory once to calculate %
         final long totalMem = si.getHardware().getMemory().getTotal();
 
         while (true) {
+            // Clear the screen
             System.out.print("\033[H\033[2J");
             System.out.flush();
 
             long uptimeSeconds = os.getSystemUptime();
             
-            // Format seconds into Days, Hours, Minutes, Seconds
+            // Format the total uptime seconds into Days, Hours, Minutes, and Seconds
             long days = uptimeSeconds / (24 * 3600);
             long hours = (uptimeSeconds % (24 * 3600)) / 3600;
             long minutes = (uptimeSeconds % 3600) / 60;
             long seconds = uptimeSeconds % 60;
             
+            // Display the uptime
             System.out.println("\n\n\n\n\n");
             System.out.println("=== System Uptime ===");
             System.out.printf("%d Days, %02d Hours, %02d Minutes, %02d Seconds\n\n", days, hours, minutes, seconds);
-            //System.out.println("\n\n\n");
 
-            //System.out.println("=".repeat(80));
             System.out.println("=== Live Processes ===");
-            //System.out.println("=".repeat(80));
 
             // Get the current list of processes
             List<OSProcess> processes = os.getProcesses();
@@ -109,12 +108,12 @@ public class SystemInfoModule {
             // Sort the list by RAM usage (Resident Set Size), from high to low
             processes.sort(Comparator.comparing(OSProcess::getResidentSetSize).reversed());
 
-            // Print a clean, formatted table header
+            // Print a formatted table header
             System.out.printf("%-8s | %-10s | %-8s | %s\n", 
                     "PID", "USER", "%MEM", "NAME");
             System.out.println("-".repeat(80));
 
-            // Loop and print the TOP 15
+            // Loop and print the top 15
             for (int i = 0; i < 15 && i < processes.size(); i++) {
                 OSProcess p = processes.get(i);
                 
@@ -129,22 +128,30 @@ public class SystemInfoModule {
             }
             
             System.out.println("\nPress Enter to return to menu...");
+            // Wait 500 ms, exit the loop if key pressed
             try {
-                if (System.in.available() > 0) {
-                    System.in.read(new byte[System.in.available()]); // Clear buffer
+                // System.in.available() allows checking if user pressed ENTER
+                 if (System.in.available() > 0) {
+                    // Clear the input buffer before breaking (so input doesn't carry over to the next menu)
+                    System.in.read(new byte[System.in.available()]);
                     break;
                 }
-                Thread.sleep(2000); // 2-second update is good for processes
-            } catch (Exception e) {
+                // Update the graph every half second
+                Thread.sleep(1000);
+            } 
+            // Catch if something tries to interrupt this current thread 
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
+            } 
+            // Catch any other exceptions (like IO exceptions)
+            catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
-    /**
-     * Shows static Operating System information.
-     */
+    // Shows static OS information
     private static void showOsInfo() {
         OSVersionInfo versionInfo = os.getVersionInfo();
 
@@ -159,9 +166,7 @@ public class SystemInfoModule {
         Main.scanner.nextLine(); // Wait
     }
 
-    /**
-     * Shows static Machine/Computer System information.
-     */
+    // Shows general information about the machines
     private static void showMachineInfo() {
         System.out.println("\n=== Machine/Computer Info ===");
         System.out.println("  Manufacturer: " + computerSystem.getManufacturer());
@@ -172,9 +177,7 @@ public class SystemInfoModule {
         Main.scanner.nextLine(); // Wait
     }
 
-    /**
-     * Shows static Firmware (BIOS/UEFI) information.
-     */
+    /// Shows general information about the Firmware/BIOS
     private static void showFirmwareInfo() {
         Firmware firmware = computerSystem.getFirmware();
         System.out.println("\n=== Firmware (BIOS/UEFI) Info ===");
@@ -187,9 +190,7 @@ public class SystemInfoModule {
         Main.scanner.nextLine(); // Wait
     }
 
-    /**
-     * Shows static Motherboard (Baseboard) information.
-     */
+    // Shows static information about the Motherboard
     private static void showMotherboardInfo() {
         Baseboard baseboard = computerSystem.getBaseboard();
         System.out.println("\n=== Motherboard (Baseboard) Info ===");
