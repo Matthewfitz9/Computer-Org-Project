@@ -7,6 +7,7 @@ import oshi.SystemInfo;
 import oshi.hardware.HWDiskStore;
 import oshi.hardware.HWPartition;
 import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.UsbDevice;
 
 public class Disk {
     private static List<HWDiskStore> diskStore;
@@ -52,7 +53,14 @@ public class Disk {
             return;
         }
 
-        HWDiskStore disk = diskStore.get(diskNum);
+        HWDiskStore disk;
+
+        try {
+            disk = diskStore.get(diskNum);
+        } catch (Exception e) {
+            System.out.println("\n[ERROR] Invalid choice. Please enter a value within range.\n");
+            return;
+        }
 
         while (true) {
             

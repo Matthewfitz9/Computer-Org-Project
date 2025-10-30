@@ -68,9 +68,15 @@ public class USB {
             System.out.println("\n[ERROR] Invalid choice. Please enter number or keyword.\n");
             return;
         }
+        
+        UsbDevice usb;
 
-        UsbDevice usb = usbDevices.get(usbNum);
-
+        try {
+            usb = usbDevices.get(usbNum);
+        } catch (Exception e) {
+            System.out.println("\n[ERROR] Invalid choice. Please enter a value within range.\n");
+            return;
+        }
 
         while (true) {
 
