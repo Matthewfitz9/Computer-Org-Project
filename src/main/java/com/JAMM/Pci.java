@@ -12,15 +12,19 @@ import oshi.hardware.SoundCard;
 
 public class Pci {
 
+    // Lists to store detected PCI devices
     private static List<GraphicsCard> graphicsCardList;
     private static List<NetworkIF> networkInterfaceList;
     private static List<SoundCard> soundCardList;
 
     public static void pciMenu() {
+        // Create SystemInfo object to access hardware information
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
+        // Retrieve hardware devices
         graphicsCardList = hal.getGraphicsCards();
 
+        // gets only valid network interface lists
         networkInterfaceList = new ArrayList<>();
         for (NetworkIF net : hal.getNetworkIFs()) {
             if (!net.isKnownVmMacAddr() && !net.getDisplayName().toLowerCase().contains("loopback")) {
@@ -30,6 +34,7 @@ public class Pci {
 
         soundCardList = hal.getSoundCards();
 
+        // main menu loop
         while (true) {
             System.out.println("\n=== PCI Device Information Menu ===");
             System.out.println("Select the type of PCI device:");
@@ -68,14 +73,15 @@ public class Pci {
         }
     }
 
-    // --- Device Selection Menus (Updated) ---
 
+    // Lets the user select which graphics card to inspect.
     private static void selectGraphicsCard() {
         if (graphicsCardList.isEmpty()) {
             System.out.println("\nNo Graphics Cards found on this system.");
             return;
         }
 
+        // selecting GPU loop
         while (true) {
             System.out.println("\n--- Select Graphics Card ---");
             for (int i = 0; i < graphicsCardList.size(); i++) {
@@ -189,7 +195,7 @@ public class Pci {
         }
     }
 
-    // --- Information Display Menus ---
+    // Information Display Menus
 
     private static void showGraphicsInfo(GraphicsCard card) {
         System.out.println("\n=== Graphics Card Info: " + card.getName() + " ===");
@@ -240,7 +246,7 @@ public class Pci {
         System.out.println("  Driver Version: " + card.getDriverVersion());
     }
 
-    // --- Helper Info Display Functions ---
+    // Helper Info Display Functions
 
     private static void showNetworkGeneralInfo(NetworkIF net) {
         System.out.println("\n== General Network Info ==\n");
@@ -267,7 +273,7 @@ public class Pci {
         }
     }
 
-    // --- Integrated Network Graph Code ---
+    // Integrated Network Graph Code
 
     private static final double MAX_SPEED_MBPS = 1000.0;
     private static final double MAX_SPEED_BPS = MAX_SPEED_MBPS * 1000.0 * 1000.0 / 8.0;
@@ -278,11 +284,14 @@ public class Pci {
         double[] netHistory = new double[graphWidth];
         String graphTitle = isDownload ? "Download" : "Upload";
 
+        // Initial byte and timestamp values
         long prevBytes = isDownload ? net.getBytesRecv() : net.getBytesSent();
         long prevTimestamp = net.getTimeStamp();
         double currentSpeedMbps = 0;
 
+        // loop until user presses enter
         while (true) {
+            // Refresh NIC data
             if (!net.updateAttributes()) {
                 System.out.println("\nFailed to update network stats. Returning...");
                 System.out.println("Press Enter to continue...");
@@ -293,19 +302,24 @@ public class Pci {
             long newBytes = isDownload ? net.getBytesRecv() : net.getBytesSent();
             long newTimestamp = net.getTimeStamp();
 
+            // change to bytes per second
             double totalMs = newTimestamp - prevTimestamp;
             double speedBps = (totalMs > 0) ? (newBytes - prevBytes) / (totalMs / 1000.0) : 0;
 
             double load = (speedBps / MAX_SPEED_BPS) * 100.0;
             load = Math.min(100.0, Math.max(0.0, load));
 
+            // change to bytes per second
             currentSpeedMbps = (speedBps * 8) / 1000000.0;
 
+            // Shift old data left, add new point to history
             System.arraycopy(netHistory, 1, netHistory, 0, graphWidth - 1);
             netHistory[graphWidth - 1] = load;
 
+            // clear screen
             System.out.print("\033[H\033[2J");
             System.out.flush();
+            // Draw graph
             System.out.println("=".repeat(graphWidth));
             System.out.println("Network " + graphTitle + " Speed Graph: " + net.getDisplayName());
             System.out.println("-".repeat(graphWidth));
