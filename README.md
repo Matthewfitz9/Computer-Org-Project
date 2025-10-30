@@ -92,7 +92,7 @@ read and understood the Assignment Regulations set out in the module documentati
 This assignment, or any part of it, has not been previously submitted by me or any other
 person for assessment on this or any other course of study.
 
-Signed: Joshua Corcoran, 25439235
-        Mathieu Gril, 25441752
-        Artem Bosyi, 25427377
+Signed: Joshua Corcoran, 25439235,
+        Mathieu Gril, 25441752,
+        Artem Bosyi, 25427377,
         Matthew Fitzgerald, 25453718
