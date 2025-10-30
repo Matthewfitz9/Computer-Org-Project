@@ -80,7 +80,8 @@ Matthew:
         Disk
         Usb
 
-Plagiarism Declaration – ISE 2024
+# Plagiarism Declaration – ISE 2024
+
 We declare that this material, which we now submit for assessment, is entirely our own
 work and has not been taken from the work of others, save and to the extent that such
 work has been cited and acknowledged within the text. We understand that plagiarism,
